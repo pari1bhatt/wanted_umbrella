@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wanted_umbrella/pages/dashboard.dart';
 import 'package:wanted_umbrella/pages/onboarding/forgot_password.dart';
 import 'package:wanted_umbrella/pages/onboarding/login.dart';
@@ -7,7 +8,10 @@ import 'package:wanted_umbrella/utils/constants.dart';
 import 'package:wanted_umbrella/utils/themes.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -27,8 +31,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
 
 class Routes {
   static const String login = '/login';
@@ -50,7 +52,6 @@ class Routes {
     return MaterialPageRoute(builder: (_) => Container());
   }
 }
-
 
 Route _createRoute(Widget page) {
   return PageRouteBuilder(

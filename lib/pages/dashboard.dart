@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
+import 'package:wanted_umbrella/models/dog_data.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
-
-class Content {
-  final String? text;
-  final Color? color;
-
-  Content({this.text, this.color});
-}
+import 'package:wanted_umbrella/utils/utils.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -27,34 +22,39 @@ class _DashboardState extends State<Dashboard> {
   int currentIndex = 0;
   late Size size;
 
-
   List<SwipeItem> _swipeItems = [];
   late MatchEngine _matchEngine;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  List<String> _names = ["Red", "Blue", "Green", "Yellow", "Orange"];
-  List<Color> _colors = [Colors.red, Colors.blue, Colors.green, Colors.yellow, Colors.orange];
+  List<DogData> dogData = [
+    DogData(text: "Doggo", image: GetImages.dog1),
+    DogData(text: "Bunty", image: GetImages.done2_1),
+    DogData(text: "Rocky", image: GetImages.done2_2),
+    DogData(text: "Puppy", image: GetImages.done2_3),
+    DogData(text: "Boy", image: GetImages.done3)
+  ];
+  List<Color> colors = [Colors.red, Colors.blue, Colors.green, Colors.yellow, Colors.orange];
 
   @override
   void initState() {
-    for (int i = 0; i < _names.length; i++) {
+    for (int i = 0; i < dogData.length; i++) {
       _swipeItems.add(SwipeItem(
-          content: Content(text: _names[i], color: _colors[i]),
+          content: DogData(text: dogData[i].text),
           likeAction: () {
             _scaffoldKey.currentState?.showSnackBar(SnackBar(
-              content: Text("Liked ${_names[i]}"),
-              duration: Duration(milliseconds: 500),
+              content: Text("Liked ${dogData[i].text}"),
+              duration: const Duration(milliseconds: 500),
             ));
           },
           nopeAction: () {
             _scaffoldKey.currentState?.showSnackBar(SnackBar(
-              content: Text("Nope ${_names[i]}"),
-              duration: Duration(milliseconds: 500),
+              content: Text("Nope ${dogData[i].text}"),
+              duration: const Duration(milliseconds: 500),
             ));
           },
           superlikeAction: () {
             _scaffoldKey.currentState?.showSnackBar(SnackBar(
-              content: Text("Superliked ${_names[i]}"),
-              duration: Duration(milliseconds: 500),
+              content: Text("Superliked ${dogData[i].text}"),
+              duration: const Duration(milliseconds: 500),
             ));
           },
           onSlideUpdate: (SlideRegion? region) async {
@@ -76,9 +76,9 @@ class _DashboardState extends State<Dashboard> {
         decoration: const BoxDecoration(
           color: Colors.blue,
           gradient: LinearGradient(
-              colors: [Color(0xFF1647BF), Color(0xFFCC3DE5), Color(0xFF933DC8)],
-              begin: FractionalOffset(0.0, 0.0),
-              end: FractionalOffset(0.5, 2)),
+              colors: [Color(0xFFCC3DE5), Color(0xFF933DC8), Color(0xFF1647BF)],
+              begin: FractionalOffset(0, 0),
+              end: FractionalOffset(0.5, 1.2)),
         ),
         child: getBody(),
       ),
@@ -138,13 +138,13 @@ class _DashboardState extends State<Dashboard> {
   }
 
   getBody() {
-    double calculateHeight = size.height - (size.width * .4) - MediaQuery.of(context).padding.top;
+    double calculateHeight = size.height - (size.width * .36) - MediaQuery.of(context).padding.top;
     return Center(
       child: false
           ? const CircularProgressIndicator(color: GetColors.white)
           : Padding(
-            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-            child: Column(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   Center(
@@ -157,85 +157,79 @@ class _DashboardState extends State<Dashboard> {
                             fit: StackFit.expand,
                             children: <Widget>[
                               Card(
-                                margin: const EdgeInsets.all(16.0),
+                                margin: const EdgeInsets.all(16),
                                 shadowColor: Colors.deepPurple,
-                                elevation: 12.0,
+                                elevation: 12,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24.0),
+                                  borderRadius: BorderRadius.circular(24),
                                 ),
                                 color: Colors.white,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
+                                  padding: const EdgeInsets.all(4),
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(24.0),
+                                    borderRadius: BorderRadius.circular(24),
                                     child: Image.asset(
-                                      GetImages.done,
+                                      dogData[index].image ?? GetImages.done,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                margin: const EdgeInsets.all(20.0),
+                                margin: const EdgeInsets.all(20),
                                 decoration: const BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(24.0)), color: Colors.black26),
+                                    borderRadius: BorderRadius.all(Radius.circular(24)), color: Colors.black26),
                               ),
                               Align(
                                 alignment: Alignment.bottomCenter,
                                 child: Container(
                                   // alignment: Alignment.bottomCenter,
-                                  height: 72.0,
+                                  height: 72,
                                   decoration: const BoxDecoration(
                                       borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(24.0),
-                                        bottomRight: Radius.circular(24.0),
+                                        bottomLeft: Radius.circular(24),
+                                        bottomRight: Radius.circular(24),
                                       ),
                                       color: Colors.white24),
-                                  margin: const EdgeInsets.fromLTRB(24.0, 40.0, 24.0, 24.0),
+                                  margin: const EdgeInsets.fromLTRB(24, 40, 24, 24),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: <Widget>[
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: const <Widget>[
+                                        children: <Widget>[
                                           Flexible(
                                             child: Padding(
-                                              padding: EdgeInsets.all(4.0),
+                                              padding: const EdgeInsets.all(4.0),
                                               child: Text(
-                                                "something",
+                                                dogData[index].text ?? "dog name",
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
                                                 softWrap: false,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 26,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                                style: const TextStyle(
+                                                    color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
                                               ),
                                             ),
                                           ),
-                                          Flexible(
+                                          const Flexible(
                                             child: Padding(
-                                              padding: EdgeInsets.all(4.0),
+                                              padding: EdgeInsets.all(4),
                                               child: Text(
-                                                "location",
+                                                "personality",
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
                                                 softWrap: false,
                                                 textAlign: TextAlign.left,
                                                 style: TextStyle(
-                                                  color: Colors.white70,
-                                                  fontSize: 14.0,
-                                                  fontWeight: FontWeight.normal,
-                                                ),
+                                                    color: Colors.white70, fontSize: 14, fontWeight: FontWeight.normal),
                                               ),
                                             ),
                                           ),
                                         ],
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.all(8),
                                         child: ElevatedButton.icon(
                                           onPressed: () {},
                                           icon: const Icon(
@@ -246,16 +240,16 @@ class _DashboardState extends State<Dashboard> {
                                             "Profile",
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 14.0,
+                                              fontSize: 14,
                                               overflow: TextOverflow.ellipsis,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                           style: ElevatedButton.styleFrom(
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(30.0),
+                                              borderRadius: BorderRadius.circular(30),
                                             ),
-                                            elevation: 8.0,
+                                            elevation: 8,
                                             shadowColor: Colors.deepPurple,
                                           ),
                                         ),
@@ -268,15 +262,12 @@ class _DashboardState extends State<Dashboard> {
                           );
                         },
                         onStackFinished: () {
-                          _scaffoldKey.currentState!.showSnackBar(const SnackBar(
-                            content: Text("Stack Finished"),
-                            duration: Duration(milliseconds: 500),
-                          ));
+                          Utils.showSnackBar(context, "Stack Finished");
                         },
                         itemChanged: (SwipeItem item, int index) {
                           print("item: ${item.content.text}, index: $index");
                         },
-                        upSwipeAllowed: true,
+                        // upSwipeAllowed: true,
                         fillSpace: true,
                       ),
                     ),
@@ -294,7 +285,7 @@ class _DashboardState extends State<Dashboard> {
                           backgroundColor: Colors.white,
                           child: IconButton(
                             icon: const Icon(
-                              Icons.thumb_down_alt_rounded,
+                              Icons.close,
                               color: Colors.red,
                             ),
                             onPressed: () {
@@ -311,10 +302,10 @@ class _DashboardState extends State<Dashboard> {
                           boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black, spreadRadius: 2)],
                         ),
                         child: CircleAvatar(
-                          radius: 36.0,
+                          radius: 30,
                           backgroundColor: Colors.white,
                           child: CircleAvatar(
-                            radius: 32.0,
+                            radius: 28,
                             backgroundColor: Colors.deepPurple,
                             child: Center(
                               child: IconButton(
@@ -342,7 +333,7 @@ class _DashboardState extends State<Dashboard> {
                           backgroundColor: Colors.white,
                           child: IconButton(
                             icon: const Icon(
-                              Icons.thumb_up_alt_rounded,
+                              Icons.favorite,
                               color: Colors.red,
                             ),
                             onPressed: () {
@@ -356,7 +347,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ],
               ),
-          ),
+            ),
     );
   }
 }
