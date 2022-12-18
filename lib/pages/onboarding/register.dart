@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wanted_umbrella/main.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
+import 'package:wanted_umbrella/utils/utils.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -16,15 +18,15 @@ class RegisterPageState extends State<RegisterPage> {
 
   bool _showSpinner = false;
 
-  bool _wrongEmail = false;
-  bool _wrongPassword = false;
+  bool wrongEmail = false;
+  bool wrongPassword = false;
 
-  String _emailText = 'Please use a valid email';
-  String _passwordText = 'Please use a strong password';
+  String emailText = 'Please use a valid email';
+  String passwordText = 'password should be at least 6 letters';
 
   // final GoogleSignIn _googleSignIn = GoogleSignIn();
   //
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // Future<FirebaseUser> _handleSignIn() async {
   //   // hold the instance of the authenticated user
@@ -92,7 +94,7 @@ class RegisterPageState extends State<RegisterPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    errorText: _wrongEmail ? _emailText : null,
+                    errorText: wrongEmail ? emailText : null,
                   ),
                 ),
                 const SizedBox(height: 20.0),
@@ -104,141 +106,17 @@ class RegisterPageState extends State<RegisterPage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    errorText: _wrongPassword ? _passwordText : null,
+                    errorText: wrongPassword ? passwordText : null,
                   ),
                 ),
                 const SizedBox(height: 10.0),
               ],
             ),
-            RaisedButton(
-              padding: EdgeInsets.symmetric(vertical: 10.0),
-              color: GetColors.purple,
-              onPressed: () async {
-                // setState(() {
-                //   _wrongEmail = false;
-                //   _wrongPassword = false;
-                // });
-                // try {
-                //   if (validator.isEmail(email) &
-                //   validator.isLength(password, 6)) {
-                //     setState(() {
-                //       _showSpinner = true;
-                //     });
-                //     final newUser =
-                //     await _auth.createUserWithEmailAndPassword(
-                //       email: email,
-                //       password: password,
-                //     );
-                //     if (newUser != null) {
-                //       print('user authenticated by registration');
-                //       Navigator.pushNamed(context, Done.id);
-                //     }
-                //   }
-                //
-                //   setState(() {
-                //     if (!validator.isEmail(email)) {
-                //       _wrongEmail = true;
-                //     } else if (!validator.isLength(password, 6)) {
-                //       _wrongPassword = true;
-                //     } else {
-                //       _wrongEmail = true;
-                //       _wrongPassword = true;
-                //     }
-                //   });
-                // } catch (e) {
-                //   setState(() {
-                //     _wrongEmail = true;
-                //     if (e.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
-                //       _emailText =
-                //       'The email address is already in use by another account';
-                //     }
-                //   });
-                // }
-              },
+            TextButton(
+              style: TextButton.styleFrom(backgroundColor: GetColors.purple),
+              onPressed: onRegister,
               child: const Text('Register', style: TextStyle(fontSize: 25, color: GetColors.white)),
             ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     Padding(
-            //       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            //       child: Container(
-            //         height: 1.0,
-            //         width: 60.0,
-            //         color: Colors.black87
-            //       ),
-            //     ),
-            //     const Text(
-            //       'Or',
-            //       style: TextStyle(fontSize: 25)
-            //     ),
-            //     Padding(
-            //       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            //       child: Container(
-            //         height: 1.0,
-            //         width: 60.0,
-            //         color: Colors.black87,
-            //       ),
-            //     ),
-            //   ],
-            // ),
-            // Row(
-            //   children: [
-            //     Expanded(
-            //       child: RaisedButton(
-            //         padding: EdgeInsets.symmetric(vertical: 5.0),
-            //         color: Colors.white,
-            //         shape: ContinuousRectangleBorder(
-            //           side:
-            //           BorderSide(width: 0.5, color: Colors.grey[400]),
-            //         ),
-            //         onPressed: () {
-            //           onGoogleSignIn(context);
-            //         },
-            //         child: Row(
-            //           mainAxisAlignment: MainAxisAlignment.center,
-            //           children: [
-            //             Image.asset('assets/images/google.png',
-            //                 fit: BoxFit.contain,
-            //                 width: 40.0,
-            //                 height: 40.0),
-            //             Text(
-            //               'Google',
-            //               style: TextStyle(
-            //                   fontSize: 25.0, color: Colors.black),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //     SizedBox(width: 20.0),
-            //     Expanded(
-            //       child: RaisedButton(
-            //         padding: EdgeInsets.symmetric(vertical: 5.0),
-            //         color: Colors.white,
-            //         shape: ContinuousRectangleBorder(
-            //           side:
-            //           BorderSide(width: 0.5, color: Colors.grey[400]),
-            //         ),
-            //         onPressed: () {
-            //           //TODO: Implement facebook functionality
-            //         },
-            //         child: Row(
-            //           mainAxisAlignment: MainAxisAlignment.center,
-            //           children: [
-            //             Image.asset('assets/images/facebook.png',
-            //                 fit: BoxFit.cover, width: 40.0, height: 40.0),
-            //             Text(
-            //               'Facebook',
-            //               style: TextStyle(
-            //                   fontSize: 25.0, color: Colors.black),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -258,5 +136,37 @@ class RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+
+  onRegister() async {
+    if (Utils.validateEmail(email)) {
+      setState(() => wrongEmail = true);
+    } else if (password.length < 6) {
+      setState(() {
+        wrongEmail = false;
+        wrongPassword = true;
+      });
+    } else {
+      setState(() {
+        wrongEmail = false;
+        wrongPassword = false;
+      });
+      try {
+        setState(() {
+          _showSpinner = true;
+        });
+
+        await _auth.createUserWithEmailAndPassword(email: email, password: password);
+        Utils.showSnackBar(context, "User Registration done");
+        Navigator.pop(context);
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          wrongEmail = true;
+          if (e.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
+            emailText = 'The email address is already in use by another account';
+          }
+        });
+      }
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wanted_umbrella/main.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
@@ -7,7 +8,6 @@ import 'package:wanted_umbrella/utils/utils.dart';
 
 // FirebaseUser _user;
 
-// ignore: must_be_immutable
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -16,16 +16,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  String? email;
-  String? password;
+  String email = '';
+  String password = '';
 
   bool wrongEmail = false;
   bool wrongPassword = false;
 
-  bool _showSpinner = false;
-
   // final GoogleSignIn _googleSignIn = GoogleSignIn();
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
 //   Future<FirebaseUser> _handleSignIn() async {
 //     // hold the instance of the authenticated user
@@ -67,7 +65,7 @@ class LoginPageState extends State<LoginPage> {
   // }
 
   String emailText = 'Email doesn\'t match';
-  String passwordText = 'Password doesn\'t match';
+  String passwordText = 'password should be at least 6 letters';
   var presscount = 0;
   @override
   Widget build(BuildContext context) {
@@ -77,7 +75,6 @@ class LoginPageState extends State<LoginPage> {
         resizeToAvoidBottomInset: false,
         backgroundColor: GetColors.white,
         body: Container(
-          // color: Colors.blue,
           padding: const EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -133,124 +130,13 @@ class LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-              RaisedButton(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                color: GetColors.purple,
-                onPressed: () async {
-                  setState(() {
-                    _showSpinner = true;
-                  });
-                  try {
-                    setState(() {
-                      wrongEmail = false;
-                      wrongPassword = false;
-                    });
-                    // final newUser = await _auth.signInWithEmailAndPassword(
-                    //     email: email, password: password);
-                    // if (newUser != null) {
-                      Navigator.pushNamed(context, Routes.dashboard);
-                    // }
-                  } catch (e) {
-                    // print(e.code);
-                    // if (e.code == 'ERROR_WRONG_PASSWORD') {
-                    //   setState(() {
-                    //     _wrongPassword = true;
-                    //   });
-                    // } else {
-                    //   setState(() {
-                    //     emailText = 'User doesn\'t exist';
-                    //     passwordText = 'Please check your email';
-                    //
-                    //     _wrongPassword = true;
-                    //     _wrongEmail = true;
-                    //   });
-                    // }
-                  }
-                },
+              TextButton(
+                // padding: EdgeInsets.symmetric(vertical: 10),
+                // color: GetColors.purple,
+                style: TextButton.styleFrom(backgroundColor: GetColors.purple),
+                onPressed: onLogin,
                 child: const Text('Login', style: TextStyle(fontSize: 25, color: GetColors.white)),
               ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     Padding(
-              //       padding: EdgeInsets.symmetric(horizontal: 10.0),
-              //       child: Container(
-              //         height: 1.0,
-              //         width: 60.0,
-              //         color: Colors.black87,
-              //       ),
-              //     ),
-              //     Text(
-              //       'Or',
-              //       style: TextStyle(fontSize: 25.0),
-              //     ),
-              //     Padding(
-              //       padding: EdgeInsets.symmetric(horizontal: 10.0),
-              //       child: Container(
-              //         height: 1.0,
-              //         width: 60.0,
-              //         color: Colors.black87,
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              // Row(
-              //   children: [
-              //     Expanded(
-              //       child: RaisedButton(
-              //         padding: EdgeInsets.symmetric(vertical: 5.0),
-              //         color: Colors.white,
-              //         shape: ContinuousRectangleBorder(
-              //           side:
-              //           BorderSide(width: 0.5, color: Colors.grey[400]),
-              //         ),
-              //         onPressed: () {
-              //           onGoogleSignIn(context);
-              //         },
-              //         child: Row(
-              //           mainAxisAlignment: MainAxisAlignment.center,
-              //           children: [
-              //             Image.asset('assets/images/google.png',
-              //                 fit: BoxFit.contain,
-              //                 width: 40.0,
-              //                 height: 40.0),
-              //             const Text(
-              //               'Google',
-              //               style: TextStyle(
-              //                   fontSize: 25.0, color: Colors.black),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //     ),
-              //     SizedBox(width: 20.0),
-              //     Expanded(
-              //       child: RaisedButton(
-              //         padding: const EdgeInsets.symmetric(vertical: 5.0),
-              //         color: Colors.white,
-              //         shape: ContinuousRectangleBorder(
-              //           side:
-              //           BorderSide(width: 0.5, color: Colors.grey[400]),
-              //         ),
-              //         onPressed: () {
-              //           //TODO: Implement facebook functionality
-              //         },
-              //         child: Row(
-              //           mainAxisAlignment: MainAxisAlignment.center,
-              //           children: [
-              //             Image.asset('assets/images/facebook.png',
-              //                 fit: BoxFit.cover, width: 40.0, height: 40.0),
-              //             const Text(
-              //               'Facebook',
-              //               style: TextStyle(
-              //                   fontSize: 25.0, color: Colors.black),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -268,6 +154,48 @@ class LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  onLogin() async{
+    if(Utils.validateEmail(email)){
+      setState(() => wrongEmail = true);
+    } else if (password.length < 6){
+      setState(() {
+        wrongEmail = false;
+        wrongPassword = true;
+      });
+    } else {
+
+      try {
+        setState(() {
+          wrongEmail = false;
+          wrongPassword = false;
+        });
+        final newUser = await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
+        print('check: ${newUser.toString()}');
+
+        if (newUser != null) {
+        Navigator.pushNamed(context, Routes.dashboard);
+        }
+      } on FirebaseAuthException catch (e) {
+        print(e.code);
+        if (e.code == 'wrong-password') {
+          setState(() {
+            wrongPassword = true;
+            passwordText = 'Wrong password';
+          });
+        } else {
+          setState(() {
+            emailText = 'User doesn\'t exist';
+            passwordText = 'Please check your email';
+
+            wrongPassword = true;
+            wrongEmail = true;
+          });
+        }
+      }
+    }
   }
 
   Future<bool> onWillPop () async {

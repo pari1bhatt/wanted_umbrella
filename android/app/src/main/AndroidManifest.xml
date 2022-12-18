@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.wanted_umbrella">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
    <application
         android:label="wanted_umbrella"
         android:name="${applicationName}"

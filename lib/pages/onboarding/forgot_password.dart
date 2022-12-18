@@ -24,34 +24,28 @@ class ForgotPassword extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Text(
-              'Reset Password',
-              style: TextStyle(fontSize: 40.0),
-            ),
+            const Text('Reset Password', style: TextStyle(fontSize: 40.0)),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text(
-                  'Enter your email',
-                  style: TextStyle(fontSize: 30.0),
-                ),
+                const Text('Enter your email', style: TextStyle(fontSize: 30.0)),
                 const SizedBox(height: 20.0),
                 TextField(
-                  keyboardType: TextInputType.emailAddress,
-                  onChanged: (value) {
-                    email = value;
-                  },
-                  decoration: const InputDecoration(hintText: 'Email'),
-                ),
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (value) {
+                      email = value;
+                    },
+                    decoration: const InputDecoration(hintText: 'Email')),
               ],
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                RaisedButton(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  color: GetColors.purple,
+                TextButton(
+                  // padding: const EdgeInsets.symmetric(vertical: 10),
+                  // color: GetColors.purple,
+                  style: TextButton.styleFrom(backgroundColor: GetColors.purple),
                   onPressed: () {
                     // resetPassword(email);
                     AwesomeDialog(
@@ -72,10 +66,7 @@ class ForgotPassword extends StatelessWidget {
                     onTap: () {
                       Navigator.pop(context, Routes.login);
                     },
-                    child: const Text(
-                      'Back to Login',
-                      style: TextStyle(fontSize: 20.0, color: GetColors.purple),
-                    ),
+                    child: const Text('Back to Login', style: TextStyle(fontSize: 20.0, color: GetColors.purple)),
                   ),
                 ),
               ],

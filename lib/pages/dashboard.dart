@@ -24,7 +24,6 @@ class _DashboardState extends State<Dashboard> {
 
   List<SwipeItem> _swipeItems = [];
   late MatchEngine _matchEngine;
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   List<DogData> dogData = [
     DogData(text: "Doggo", image: GetImages.dog1),
     DogData(text: "Bunty", image: GetImages.done2_1),
@@ -32,7 +31,6 @@ class _DashboardState extends State<Dashboard> {
     DogData(text: "Puppy", image: GetImages.done2_3),
     DogData(text: "Boy", image: GetImages.done3)
   ];
-  List<Color> colors = [Colors.red, Colors.blue, Colors.green, Colors.yellow, Colors.orange];
 
   @override
   void initState() {
@@ -40,22 +38,13 @@ class _DashboardState extends State<Dashboard> {
       _swipeItems.add(SwipeItem(
           content: DogData(text: dogData[i].text),
           likeAction: () {
-            _scaffoldKey.currentState?.showSnackBar(SnackBar(
-              content: Text("Liked ${dogData[i].text}"),
-              duration: const Duration(milliseconds: 500),
-            ));
+            Utils.showSnackBar(context, "Liked ${dogData[i].text}");
           },
           nopeAction: () {
-            _scaffoldKey.currentState?.showSnackBar(SnackBar(
-              content: Text("Nope ${dogData[i].text}"),
-              duration: const Duration(milliseconds: 500),
-            ));
+            Utils.showSnackBar(context, "Nope ${dogData[i].text}");
           },
           superlikeAction: () {
-            _scaffoldKey.currentState?.showSnackBar(SnackBar(
-              content: Text("Superliked ${dogData[i].text}"),
-              duration: const Duration(milliseconds: 500),
-            ));
+            Utils.showSnackBar(context, "Superliked ${dogData[i].text}");
           },
           onSlideUpdate: (SlideRegion? region) async {
             print("Region $region");
