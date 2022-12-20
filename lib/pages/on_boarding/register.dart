@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wanted_umbrella/main.dart';
+import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
+import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 import 'package:wanted_umbrella/utils/utils.dart';
 
@@ -12,11 +15,8 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
-  String name = '';
-  String email = '';
-  String password = '';
 
-  bool _showSpinner = false;
+
 
   bool wrongEmail = false;
   bool wrongPassword = false;
@@ -26,7 +26,8 @@ class RegisterPageState extends State<RegisterPage> {
 
   // final GoogleSignIn _googleSignIn = GoogleSignIn();
   //
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
+  late OnBoardingProvider onBoardingProvider;
 
   // Future<FirebaseUser> _handleSignIn() async {
   //   // hold the instance of the authenticated user
@@ -59,7 +60,14 @@ class RegisterPageState extends State<RegisterPage> {
   // }
 
   @override
+  void initState() {
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    onBoardingProvider = Provider.of<OnBoardingProvider>(context);
     return Scaffold(
       backgroundColor: GetColors.white,
       resizeToAvoidBottomInset: false,
@@ -82,7 +90,7 @@ class RegisterPageState extends State<RegisterPage> {
                 TextField(
                   keyboardType: TextInputType.name,
                   onChanged: (value) {
-                    name = value;
+                    onBoardingProvider.regName = value;
                   },
                   decoration: const InputDecoration(hintText: 'Full Name', labelText: 'Full Name'),
                 ),
@@ -90,7 +98,7 @@ class RegisterPageState extends State<RegisterPage> {
                 TextField(
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (value) {
-                    email = value;
+                    onBoardingProvider.regEmail = value;
                   },
                   decoration: InputDecoration(
                     labelText: 'Email',
@@ -102,7 +110,7 @@ class RegisterPageState extends State<RegisterPage> {
                   obscureText: true,
                   keyboardType: TextInputType.visiblePassword,
                   onChanged: (value) {
-                    password = value;
+                    onBoardingProvider.regPassword = value;
                   },
                   decoration: InputDecoration(
                     labelText: 'Password',
@@ -114,8 +122,8 @@ class RegisterPageState extends State<RegisterPage> {
             ),
             TextButton(
               style: TextButton.styleFrom(backgroundColor: GetColors.purple),
-              onPressed: onRegister,
-              child: const Text('Register', style: TextStyle(fontSize: 25, color: GetColors.white)),
+              onPressed: onNext,
+              child: const Text('Next', style: TextStyle(fontSize: 25, color: GetColors.white)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -138,10 +146,14 @@ class RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  onRegister() async {
-    if (Utils.validateEmail(email)) {
+  onNext() async {
+
+
+
+
+    if (Utils.validateEmail(onBoardingProvider.regEmail)) {
       setState(() => wrongEmail = true);
-    } else if (password.length < 6) {
+    } else if (onBoardingProvider.regPassword.length < 6) {
       setState(() {
         wrongEmail = false;
         wrongPassword = true;
@@ -151,22 +163,21 @@ class RegisterPageState extends State<RegisterPage> {
         wrongEmail = false;
         wrongPassword = false;
       });
-      try {
-        setState(() {
-          _showSpinner = true;
-        });
+      Navigator.pushNamed(context, Routes.dog_detail);
 
-        await _auth.createUserWithEmailAndPassword(email: email, password: password);
-        Utils.showSnackBar(context, "User Registration done");
-        Navigator.pop(context);
-      } on FirebaseAuthException catch (e) {
-        setState(() {
-          wrongEmail = true;
-          if (e.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
-            emailText = 'The email address is already in use by another account';
-          }
-        });
-      }
+      // try {
+      //
+      //   await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      //   Utils.showSnackBar(context, "User Registration done");
+      //   Navigator.pop(context);
+      // } on FirebaseAuthException catch (e) {
+      //   setState(() {
+      //     wrongEmail = true;
+      //     if (e.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
+      //       emailText = 'The email address is already in use by another account';
+      //     }
+      //   });
+      // }
     }
   }
 }

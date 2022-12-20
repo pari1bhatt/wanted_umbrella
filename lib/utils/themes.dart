@@ -6,6 +6,7 @@ class MyTheme {
     return ThemeData(
       brightness: Brightness.light,
       primaryColor: GetColors.purple,
+      scaffoldBackgroundColor: GetColors.white,
       colorScheme: ThemeData().colorScheme.copyWith(primary: GetColors.purple, brightness: Brightness.light),
     );
   }
@@ -14,6 +15,7 @@ class MyTheme {
     return ThemeData(
       brightness: Brightness.dark,
       primaryColor: GetColors.purple,
+      scaffoldBackgroundColor: GetColors.white,
       colorScheme: ThemeData().colorScheme.copyWith(primary: GetColors.purple, brightness: Brightness.dark),
     );
   }

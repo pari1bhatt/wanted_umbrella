@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wanted_umbrella/main.dart';
+import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 import 'package:wanted_umbrella/utils/utils.dart';
 
@@ -72,6 +73,7 @@ class LoginPageState extends State<LoginPage> {
     return WillPopScope(
         onWillPop: onWillPop,
       child: Scaffold(
+
         resizeToAvoidBottomInset: false,
         backgroundColor: GetColors.white,
         body: Container(
