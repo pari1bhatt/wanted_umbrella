@@ -15,14 +15,12 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
-
-
-
   bool wrongEmail = false;
   bool wrongPassword = false;
+  bool obsecurePass = true;
 
   String emailText = 'Please use a valid email';
-  String passwordText = 'password should be at least 6 letters';
+  String passwordText = 'Please choose a better password';
 
   // final GoogleSignIn _googleSignIn = GoogleSignIn();
   //
@@ -61,7 +59,6 @@ class RegisterPageState extends State<RegisterPage> {
 
   @override
   void initState() {
-
     super.initState();
   }
 
@@ -107,15 +104,17 @@ class RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 20.0),
                 TextField(
-                  obscureText: true,
+                  obscureText: obsecurePass,
                   keyboardType: TextInputType.visiblePassword,
                   onChanged: (value) {
                     onBoardingProvider.regPassword = value;
                   },
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    errorText: wrongPassword ? passwordText : null,
-                  ),
+                      labelText: 'Password',
+                      errorText: wrongPassword ? passwordText : null,
+                      suffixIcon: IconButton(
+                          onPressed: () => setState(() => obsecurePass = !obsecurePass),
+                          icon: Icon(obsecurePass ? Icons.visibility : Icons.visibility_off))),
                 ),
                 const SizedBox(height: 10.0),
               ],
@@ -147,13 +146,9 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   onNext() async {
-
-
-
-
     if (Utils.validateEmail(onBoardingProvider.regEmail)) {
       setState(() => wrongEmail = true);
-    } else if (onBoardingProvider.regPassword.length < 6) {
+    } else if (Utils.validatePassword(onBoardingProvider.regPassword)) {
       setState(() {
         wrongEmail = false;
         wrongPassword = true;

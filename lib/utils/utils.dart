@@ -19,6 +19,13 @@ class Utils {
     return !emailValid;
   }
 
+  static validatePassword(String text) {
+    bool passValid =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$').hasMatch(text);
+    print("valid: ${passValid}");
+    return !passValid;
+  }
+
   static Future pickImage() async {
     final _picker = ImagePicker();
     XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
