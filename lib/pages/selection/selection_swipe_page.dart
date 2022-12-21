@@ -16,11 +16,11 @@ class SelectionSwipePage extends StatefulWidget {
 class _SelectionSwipePageState extends State<SelectionSwipePage> {
   late MatchEngine _matchEngine;
   List<DogData> dogData = [
-    DogData(text: "Doggo", image: GetImages.dog1),
-    DogData(text: "Bunty", image: GetImages.done2_1),
-    DogData(text: "Rocky", image: GetImages.done2_2),
-    DogData(text: "Puppy", image: GetImages.done2_3),
-    DogData(text: "Boy", image: GetImages.done3)
+    DogData(text: "Doggo", image: GetImages.dog1, breed: 'Corgi', age: '2', personalities: ['Calm', 'Happy']),
+    DogData(text: "Bunty", image: GetImages.done2_1, breed: 'Husky', age: '5', personalities: ['Energetic', 'Happy']),
+    DogData(text: "Rocky", image: GetImages.done2_2, breed: 'Husky', age: '2', personalities: ['Calm', 'Happy']),
+    DogData(text: "Puppy", image: GetImages.done2_3, breed: 'Husky', age: '11', personalities: ['Calm']),
+    DogData(text: "Boy", image: GetImages.done3, breed: 'Corgi', age: '8', personalities: ['Happy'])
   ];
   List<SwipeItem> swipeItems = [];
   bool isStackFinished = false;
@@ -34,26 +34,26 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
   }
 
   loadData() async {
-      swipeItems = [];
-      for (int i = 0; i < dogData.length; i++) {
-        swipeItems.add(SwipeItem(
-            content: DogData(text: dogData[i].text),
-            likeAction: () {
-              Utils.showSnackBar(context, "Liked ${dogData[i].text}");
-            },
-            nopeAction: () {
-              Utils.showSnackBar(context, "Nope ${dogData[i].text}");
-            },
-            superlikeAction: () {
-              Utils.showSnackBar(context, "Superliked ${dogData[i].text}");
-            },
-            onSlideUpdate: (SlideRegion? region) async {
-              print("Region $region");
-            }));
-      }
-      _matchEngine = MatchEngine(swipeItems: swipeItems);
-      isStackFinished = false;
-      setState(() {});
+    swipeItems = [];
+    for (int i = 0; i < dogData.length; i++) {
+      swipeItems.add(SwipeItem(
+          content: DogData(text: dogData[i].text),
+          likeAction: () {
+            Utils.showSnackBar(context, "Liked ${dogData[i].text}");
+          },
+          nopeAction: () {
+            Utils.showSnackBar(context, "Nope ${dogData[i].text}");
+          },
+          superlikeAction: () {
+            Utils.showSnackBar(context, "Superliked ${dogData[i].text}");
+          },
+          onSlideUpdate: (SlideRegion? region) async {
+            print("Region $region");
+          }));
+    }
+    _matchEngine = MatchEngine(swipeItems: swipeItems);
+    isStackFinished = false;
+    setState(() {});
   }
 
   @override
@@ -69,11 +69,16 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
                 children: <Widget>[
                   Center(
                     child: SizedBox(
-                      height: size.height - (size.width * .32 + MediaQuery.of(context).padding.top),
-                      child: isStackFinished
-                          ? Center(child: TextButton(onPressed: loadData, child: const Text("Reload",style: TextStyle(color: GetColors.white),)))
-                          : swipeCards()
-                    ),
+                        height: size.height - (size.width * .32 + MediaQuery.of(context).padding.top),
+                        child: isStackFinished
+                            ? Center(
+                                child: TextButton(
+                                    onPressed: loadData,
+                                    child: const Text(
+                                      "Reload",
+                                      style: TextStyle(color: GetColors.white),
+                                    )))
+                            : swipeCards()),
                   ),
                   likeDislikeButtons()
                 ],
@@ -82,7 +87,7 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
     );
   }
 
-  swipeCards(){
+  swipeCards() {
     return SwipeCards(
       matchEngine: _matchEngine,
       itemBuilder: (BuildContext context, int index) {
@@ -90,17 +95,17 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
           fit: StackFit.expand,
           children: <Widget>[
             Card(
-              margin: const EdgeInsets.all(16),
+              margin: const EdgeInsets.all(15),
               shadowColor: Colors.deepPurple,
               elevation: 12,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(20),
               ),
               color: Colors.white,
               child: Padding(
-                padding: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(3),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
                     dogData[index].image ?? GetImages.done,
                     fit: BoxFit.cover,
@@ -110,18 +115,17 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
             ),
             Container(
               margin: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(24)), color: Colors.black26),
+              decoration:
+                  const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(24)), color: Colors.black26),
             ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                // alignment: Alignment.bottomCenter,
-                height: 72,
+                height: 80,
                 decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(24),
-                      bottomRight: Radius.circular(24),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
                     ),
                     color: Colors.white24),
                 margin: const EdgeInsets.fromLTRB(24, 40, 24, 24),
@@ -134,33 +138,42 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
                       children: <Widget>[
                         Flexible(
                           child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Text(
-                              dogData[index].text ?? "dog name",
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              softWrap: false,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.bold),
+                            padding: const EdgeInsets.all(4),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '${dogData[index].text}  ',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: const TextStyle(
+                                      color: GetColors.white, fontSize: 25, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  '${dogData[index].breed}',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: const TextStyle(color: GetColors.white, fontSize: 15),
+                                )
+                              ],
                             ),
                           ),
                         ),
-                        const Flexible(
-                          child: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Text(
-                              "personality",
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              softWrap: false,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal),
-                            ),
+                        Flexible(
+                          child: Row(
+                            children: List.generate(
+                                dogData[index].personalities?.length ?? 0,
+                                (i) => Row(
+                                  children: [
+                                    Chip(
+                                          padding: EdgeInsets.zero,
+                                          label: Text(dogData[index].personalities![i]),
+                                        ),
+                                    const SizedBox(width: 5)
+                                  ],
+                                )),
                           ),
                         ),
                       ],
@@ -212,7 +225,7 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
     );
   }
 
-  likeDislikeButtons(){
+  likeDislikeButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -287,5 +300,4 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
       ],
     );
   }
-
 }

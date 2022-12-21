@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         theme: MyTheme.lightTheme(),
         darkTheme: MyTheme.darkTheme(),
         onGenerateRoute: Routes.generateRoute,
-        initialRoute: Routes.login,
+        initialRoute: Routes.dashboard,
         // theme: ThemeData(primarySwatch: Colors.blue),
         // home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
