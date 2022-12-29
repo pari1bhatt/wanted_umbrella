@@ -1,5 +1,8 @@
-
 import 'package:flutter/material.dart';
+import 'package:wanted_umbrella/pages/categories/chat_bot.dart';
+import 'package:wanted_umbrella/pages/categories/find_a_mate.dart';
+import 'package:wanted_umbrella/pages/categories/notification_page.dart';
+import 'package:wanted_umbrella/pages/chat/message_screen.dart';
 import 'package:wanted_umbrella/pages/dashboard_main.dart';
 import 'package:wanted_umbrella/pages/on_boarding/choose_personality.dart';
 import 'package:wanted_umbrella/pages/on_boarding/forgot_password.dart';
@@ -11,14 +14,25 @@ import 'pages/on_boarding/dog_detail.dart';
 import 'pages/on_boarding/dog_photos.dart';
 
 class Routes {
+  //onBoarding
   static const String login = '/login';
   static const String register = '/register';
   static const String forgot_password = '/forgot_password';
+  static const String kci_certificate = '/kci_certificate';
   static const String dog_detail = '/dog_detail';
   static const String dog_photos = '/dog_photos';
   static const String choose_personality = '/choose_personality';
-  static const String kci_certificate = '/kci_certificate';
+
+  //Dashboard
   static const String dashboard = '/dashboard';
+  static const String messege = '/messege';
+
+  //
+  static const String find_a_mate = '/find_a_mate';
+  static const String notification = '/notification';
+  static const String chat_bot = '/chat_bot';
+
+
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -29,15 +43,23 @@ class Routes {
       case forgot_password:
         return MaterialPageRoute(builder: (_) => ForgotPassword());
       case dashboard:
-        return MaterialPageRoute(builder: (_) => const Dashboard());
+        return MaterialPageRoute(builder: (_) => const Dashboard(),settings: const RouteSettings(name: dashboard));
       case dog_detail:
         return MaterialPageRoute(builder: (_) => DogDetail());
       case dog_photos:
-        return MaterialPageRoute(builder: (_) => DogPhotos());
+        return MaterialPageRoute(builder: (_) => const DogPhotos());
       case kci_certificate:
-        return MaterialPageRoute(builder: (_) => KciCertificate());
+        return MaterialPageRoute(builder: (_) => const KciCertificate());
       case choose_personality:
-        return MaterialPageRoute(builder: (_) => ChoosePersonality());
+        return MaterialPageRoute(builder: (_) => const ChoosePersonality());
+      case messege:
+        return MaterialPageRoute(builder: (_) => const MessageScreen());
+      case find_a_mate:
+        return MaterialPageRoute(builder: (_) => const FindAMate());
+      case notification:
+        return MaterialPageRoute(builder: (_) => const NotificationPage());
+      case chat_bot:
+        return MaterialPageRoute(builder: (_) => const ChatBot());
     }
     return MaterialPageRoute(builder: (_) => Container());
   }

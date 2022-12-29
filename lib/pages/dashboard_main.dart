@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:swipe_cards/draggable_card.dart';
-import 'package:swipe_cards/swipe_cards.dart';
-import 'package:wanted_umbrella/models/dog_data.dart';
+import 'package:wanted_umbrella/pages/categories/categories_page.dart';
+import 'package:wanted_umbrella/pages/explore/selection_swipe_page.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
-import 'package:wanted_umbrella/utils/utils.dart';
 
-import 'selection/selection_swipe_page.dart';
+import 'chat/chat_screen.dart';
+
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -31,22 +30,13 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       extendBody: true,
       resizeToAvoidBottomInset: false,
-      body: Container(
-        decoration: const BoxDecoration(
-          color: Colors.blue,
-          gradient: LinearGradient(
-              colors: [Color(0xFFCC3DE5), Color(0xFF933DC8), Color(0xFF1647BF)],
-              begin: FractionalOffset(0, 0),
-              end: FractionalOffset(0.5, 1.2)),
-        ),
-        child: onPageSelection(),
-      ),
+      body: onPageSelection(),
       bottomNavigationBar: Container(
         height: size.width * .155,
         decoration: BoxDecoration(
           color: GetColors.white,
           boxShadow: [
-            BoxShadow(color: GetColors.black.withOpacity(.15), blurRadius: 30, offset: const Offset(0, 10)),
+            BoxShadow(color: GetColors.black.withOpacity(0.3), blurRadius: 5, offset: const Offset(0, 0)),
           ],
           borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
         ),
@@ -99,11 +89,11 @@ class _DashboardState extends State<Dashboard> {
   onPageSelection() {
     switch (currentIndex) {
       case 0:
-        return const SelectionSwipePage();
+        return const ExplorePage();
       case 1:
-        return const Center(child: Text("Messages - Coming Soon", style: TextStyle(color: GetColors.white)));
+        return const ChatScreen();
       case 2:
-        return const Center(child: Text("Categories - Coming Soon", style: TextStyle(color: GetColors.white)));
+        return const CategoriesPage();
       case 3:
         return const Center(child: Text("Profile - Coming Soon", style: TextStyle(color: GetColors.white)));
     }

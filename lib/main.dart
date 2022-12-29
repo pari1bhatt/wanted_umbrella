@@ -2,8 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:wanted_umbrella/pages/explore/selection_swipte_provider.dart';
 import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
-import 'package:wanted_umbrella/pages/selection/selection_swipte_provider.dart';
 import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 import 'package:wanted_umbrella/utils/themes.dart';
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: OnBoardingProvider()),
-        ChangeNotifierProvider.value(value: SelectionSwipeProvider()),
+        ChangeNotifierProvider.value(value: ExplorePageProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

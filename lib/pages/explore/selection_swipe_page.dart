@@ -6,21 +6,21 @@ import 'package:wanted_umbrella/utils/constants.dart';
 import '../../models/dog_data.dart';
 import '../../utils/utils.dart';
 
-class SelectionSwipePage extends StatefulWidget {
-  const SelectionSwipePage({Key? key}) : super(key: key);
+class ExplorePage extends StatefulWidget {
+  const ExplorePage({Key? key}) : super(key: key);
 
   @override
-  State<SelectionSwipePage> createState() => _SelectionSwipePageState();
+  State<ExplorePage> createState() => _ExplorePageState();
 }
 
-class _SelectionSwipePageState extends State<SelectionSwipePage> {
+class _ExplorePageState extends State<ExplorePage> {
   late MatchEngine _matchEngine;
   List<DogData> dogData = [
     DogData(text: "Doggo", image: GetImages.dog1, breed: 'Corgi', age: '2', personalities: ['Calm', 'Happy']),
-    DogData(text: "Bunty", image: GetImages.done2_1, breed: 'Husky', age: '5', personalities: ['Energetic', 'Happy']),
-    DogData(text: "Rocky", image: GetImages.done2_2, breed: 'Husky', age: '2', personalities: ['Calm', 'Happy']),
-    DogData(text: "Puppy", image: GetImages.done2_3, breed: 'Husky', age: '11', personalities: ['Calm']),
-    DogData(text: "Boy", image: GetImages.done3, breed: 'Corgi', age: '8', personalities: ['Happy'])
+    DogData(text: "Bunty", image: GetImages.dog2_1, breed: 'Husky', age: '5', personalities: ['Energetic', 'Happy']),
+    DogData(text: "Rocky", image: GetImages.dog2_2, breed: 'Husky', age: '2', personalities: ['Calm', 'Happy']),
+    DogData(text: "Puppy", image: GetImages.dog2_3, breed: 'Husky', age: '11', personalities: ['Calm']),
+    DogData(text: "Boy", image: GetImages.dog3, breed: 'Corgi', age: '8', personalities: ['Happy'])
   ];
   List<SwipeItem> swipeItems = [];
   bool isStackFinished = false;
@@ -62,8 +62,15 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
     return Center(
       child: false
           ? const CircularProgressIndicator(color: GetColors.white)
-          : Padding(
+          : Container(
               padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+                gradient: LinearGradient(
+                    colors: [Color(0xFFCC3DE5), Color(0xFF933DC8), Color(0xFF1647BF)],
+                    begin: FractionalOffset(0, 0),
+                    end: FractionalOffset(0.5, 1.2)),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
@@ -166,14 +173,14 @@ class _SelectionSwipePageState extends State<SelectionSwipePage> {
                             children: List.generate(
                                 dogData[index].personalities?.length ?? 0,
                                 (i) => Row(
-                                  children: [
-                                    Chip(
+                                      children: [
+                                        Chip(
                                           padding: EdgeInsets.zero,
                                           label: Text(dogData[index].personalities![i]),
                                         ),
-                                    const SizedBox(width: 5)
-                                  ],
-                                )),
+                                        const SizedBox(width: 5)
+                                      ],
+                                    )),
                           ),
                         ),
                       ],
