@@ -14,13 +14,15 @@ class DogDetail extends StatefulWidget {
 
 class _DogDetailState extends State<DogDetail> {
   late OnBoardingProvider onBoardingProvider;
-  String dogName = '';
-  String? genderDropdownValue;
-  String? sizeDropdownValue;
+
+  @override
+  void initState() {
+    super.initState();
+    onBoardingProvider = Provider.of<OnBoardingProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
-    onBoardingProvider = Provider.of<OnBoardingProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -30,7 +32,10 @@ class _DogDetailState extends State<DogDetail> {
             onPressed: () => Navigator.pop(context)),
         actions: [
           TextButton(
-              onPressed: () => Navigator.popUntil(context, ModalRoute.withName(Routes.login)),
+              onPressed: () {
+                onBoardingProvider.reset();
+                Navigator.popUntil(context, ModalRoute.withName(Routes.login));
+              },
               child: const Text("cancel", style: TextStyle(color: GetColors.black)))
         ],
       ),
@@ -40,7 +45,8 @@ class _DogDetailState extends State<DogDetail> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Details about your dog:", style: TextStyle(fontSize: 22, color: GetColors.black,fontWeight: FontWeight.w600)),
+              const Text("Details about your dog:",
+                  style: TextStyle(fontSize: 22, color: GetColors.black, fontWeight: FontWeight.w600)),
               const SizedBox(height: 30),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -51,7 +57,7 @@ class _DogDetailState extends State<DogDetail> {
                     child: TextFormField(
                       keyboardType: TextInputType.name,
                       onChanged: (value) {
-                        dogName = value;
+                        onBoardingProvider.userModel.dog_name = value;
                       },
                       decoration: const InputDecoration(hintText: 'Dog name', isDense: true),
                     ),
@@ -67,7 +73,7 @@ class _DogDetailState extends State<DogDetail> {
                     child: TextFormField(
                       keyboardType: TextInputType.name,
                       onChanged: (value) {
-                        // onBoardingProvider.regName = value;
+                        onBoardingProvider.userModel.breed = value;
                       },
                       decoration: const InputDecoration(hintText: 'Breed name', isDense: true),
                     ),
@@ -82,10 +88,10 @@ class _DogDetailState extends State<DogDetail> {
                     flex: 7,
                     child: DropdownButton<String>(
                       isExpanded: true,
-                      value: genderDropdownValue,
+                      value: onBoardingProvider.userModel.gender,
                       onChanged: (String? newValue) {
                         setState(() {
-                          genderDropdownValue = newValue;
+                          onBoardingProvider.userModel.gender = newValue;
                         });
                       },
                       items: <String>['Male', 'Female'].map<DropdownMenuItem<String>>((String value) {
@@ -106,10 +112,10 @@ class _DogDetailState extends State<DogDetail> {
                     flex: 7,
                     child: DropdownButton<String>(
                       isExpanded: true,
-                      value: sizeDropdownValue,
+                      value: onBoardingProvider.userModel.size,
                       onChanged: (String? newValue) {
                         setState(() {
-                          sizeDropdownValue = newValue;
+                          onBoardingProvider.userModel.size = newValue;
                         });
                       },
                       items: <String>['Small', 'Medium', 'Large', 'Very Large']
@@ -132,7 +138,7 @@ class _DogDetailState extends State<DogDetail> {
                     child: TextFormField(
                       keyboardType: TextInputType.name,
                       onChanged: (value) {
-                        // onBoardingProvider.regName = value;
+                        onBoardingProvider.userModel.age = value;
                       },
                       decoration: const InputDecoration(hintText: 'Age in years', isDense: true),
                     ),
@@ -150,7 +156,7 @@ class _DogDetailState extends State<DogDetail> {
                       maxLines: 3,
                       keyboardType: TextInputType.name,
                       onChanged: (value) {
-                        // onBoardingProvider.regName = value;
+                        onBoardingProvider.userModel.bio = value;
                       },
                       decoration: const InputDecoration(
                           hintText: 'Please enter bio', isDense: true, border: OutlineInputBorder()),
@@ -174,10 +180,22 @@ class _DogDetailState extends State<DogDetail> {
   }
 
   onNext() {
-    if(dogName.isNotEmpty){
-      Navigator.pushNamed(context, Routes.dog_photos);
-    } else {
+    if (onBoardingProvider.userModel.dog_name?.isEmpty ?? true) {
       Utils.showSnackBar(context, "Please enter dog name");
+    }
+    else if(onBoardingProvider.userModel.breed?.isEmpty ?? true){
+      Utils.showSnackBar(context, "Please enter breed");
+    } else if(onBoardingProvider.userModel.gender?.isEmpty ?? true){
+      Utils.showSnackBar(context, "Please Select gender");
+    } else if(onBoardingProvider.userModel.size?.isEmpty ?? true){
+      Utils.showSnackBar(context, "Please Select size");
+    } else if(onBoardingProvider.userModel.age?.isEmpty ?? true){
+      Utils.showSnackBar(context, "Please enter age");
+    } else if(onBoardingProvider.userModel.bio?.isEmpty ?? true){
+      Utils.showSnackBar(context, "Please enter bio");
+    }
+    else {
+      Navigator.pushNamed(context, Routes.dog_photos);
     }
   }
 }

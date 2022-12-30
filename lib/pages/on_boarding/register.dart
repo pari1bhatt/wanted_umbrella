@@ -15,47 +15,16 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
+  bool wrongName = false;
   bool wrongEmail = false;
   bool wrongPassword = false;
   bool obsecurePass = true;
 
+  String nameText = 'Please use a proper name';
   String emailText = 'Please use a valid email';
   String passwordText = 'Please choose a better password';
 
-  // final GoogleSignIn _googleSignIn = GoogleSignIn();
-  //
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
   late OnBoardingProvider onBoardingProvider;
-
-  // Future<FirebaseUser> _handleSignIn() async {
-  //   // hold the instance of the authenticated user
-  //   FirebaseUser user;
-  //   // flag to check whether we're signed in already
-  //   bool isSignedIn = await _googleSignIn.isSignedIn();
-  //   if (isSignedIn) {
-  //     // if so, return the current user
-  //     user = await _auth.currentUser();
-  //   } else {
-  //     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-  //     final GoogleSignInAuthentication googleAuth =
-  //     await googleUser.authentication;
-  //     // get the credentials to (access / id token)
-  //     // to sign in via Firebase Authentication
-  //     final AuthCredential credential = GoogleAuthProvider.getCredential(
-  //         accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-  //     user = (await _auth.signInWithCredential(credential)).user;
-  //   }
-  //
-  //   return user;
-  // }
-
-  // void onGoogleSignIn(BuildContext context) async {
-  //   FirebaseUser user = await _handleSignIn();
-  //   Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (context) => GoogleDone(user, _googleSignIn)));
-  // }
 
   @override
   void initState() {
@@ -87,15 +56,19 @@ class RegisterPageState extends State<RegisterPage> {
                 TextField(
                   keyboardType: TextInputType.name,
                   onChanged: (value) {
-                    onBoardingProvider.regName = value;
+                    onBoardingProvider.userModel.name = value;
                   },
-                  decoration: const InputDecoration(hintText: 'Full Name', labelText: 'Full Name'),
+                  decoration: InputDecoration(
+                    hintText: 'Full Name',
+                    labelText: 'Full Name',
+                    errorText: wrongName ? nameText : null,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 TextField(
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (value) {
-                    onBoardingProvider.regEmail = value;
+                    onBoardingProvider.userModel.email = value;
                   },
                   decoration: InputDecoration(
                     labelText: 'Email',
@@ -146,8 +119,13 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   onNext() async {
-    if (Utils.validateEmail(onBoardingProvider.regEmail)) {
-      setState(() => wrongEmail = true);
+    if (Utils.validateText(onBoardingProvider.userModel.name ?? '')) {
+      setState(() => wrongName = true);
+    } else if (Utils.validateEmail(onBoardingProvider.userModel.email ?? '')) {
+      setState(() {
+        wrongName = false;
+        wrongEmail = true;
+      });
     } else if (Utils.validatePassword(onBoardingProvider.regPassword)) {
       setState(() {
         wrongEmail = false;
@@ -155,24 +133,11 @@ class RegisterPageState extends State<RegisterPage> {
       });
     } else {
       setState(() {
+        wrongName = false;
         wrongEmail = false;
         wrongPassword = false;
       });
       Navigator.pushNamed(context, Routes.dog_detail);
-
-      // try {
-      //
-      //   await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      //   Utils.showSnackBar(context, "User Registration done");
-      //   Navigator.pop(context);
-      // } on FirebaseAuthException catch (e) {
-      //   setState(() {
-      //     wrongEmail = true;
-      //     if (e.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
-      //       emailText = 'The email address is already in use by another account';
-      //     }
-      //   });
-      // }
     }
   }
 }

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
 import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 
@@ -14,7 +16,13 @@ class DogPhotos extends StatefulWidget {
 }
 
 class _DogPhotosState extends State<DogPhotos> {
-  List<File?> fileList = [];
+  late OnBoardingProvider onBoardingProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    onBoardingProvider = Provider.of<OnBoardingProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +35,10 @@ class _DogPhotosState extends State<DogPhotos> {
             onPressed: () => Navigator.pop(context)),
         actions: [
           TextButton(
-              onPressed: () => Navigator.popUntil(context, ModalRoute.withName(Routes.login)),
+              onPressed: () {
+                onBoardingProvider.reset();
+                Navigator.popUntil(context, ModalRoute.withName(Routes.login));
+              },
               child: const Text("cancel", style: TextStyle(color: GetColors.black)))
         ],
       ),
@@ -47,12 +58,12 @@ class _DogPhotosState extends State<DogPhotos> {
                 child: GridView.builder(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3, mainAxisSpacing: 10, crossAxisSpacing: 10, mainAxisExtent: 100),
-                    itemCount: fileList.length + 1,
+                    itemCount: onBoardingProvider.imageList.length + 1,
                     itemBuilder: (context, index) {
-                      if (index != (fileList.length)) {
+                      if (index != (onBoardingProvider.imageList.length)) {
                         return Container(
                           color: GetColors.grey.withOpacity(0.5),
-                          child: Image.file(fileList[index]!, fit: BoxFit.fill),
+                          child: Image.file(onBoardingProvider.imageList[index]!, fit: BoxFit.fill),
                         );
                       } else {
                         return GestureDetector(
@@ -81,15 +92,16 @@ class _DogPhotosState extends State<DogPhotos> {
   }
 
   onImagePick() async {
-    fileList.add(await Utils.pickImage());
+    onBoardingProvider.imageList.add(await Utils.pickImage());
     setState(() {});
   }
 
   onNext() {
-    if(fileList.isNotEmpty){
-      Navigator.pushNamed(context, Routes.kci_certificate);
-    } else {
+    if(onBoardingProvider.imageList.isEmpty){
       Utils.showSnackBar(context, "Please select any one image");
+    } else {
+      print("path: ${onBoardingProvider.imageList[0]!.path.split('/').last}");
+      Navigator.pushNamed(context, Routes.kci_certificate);
     }
   }
 }

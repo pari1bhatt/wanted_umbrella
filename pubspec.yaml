@@ -38,6 +38,8 @@ dependencies:
   swipe_cards: ^1.0.0
   firebase_core: ^2.4.0
   firebase_auth: ^4.2.1
+  cloud_firestore: ^4.0.0
+  firebase_storage: ^11.0.10
   provider: ^6.0.5
   image_picker: ^0.8.6
   file_picker: ^5.2.4

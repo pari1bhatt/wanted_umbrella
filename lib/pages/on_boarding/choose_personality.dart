@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wanted_umbrella/models/selection_model.dart';
 import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
 import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
+import 'package:wanted_umbrella/utils/utils.dart';
 
 class ChoosePersonality extends StatefulWidget {
   const ChoosePersonality({Key? key}) : super(key: key);
@@ -13,28 +15,6 @@ class ChoosePersonality extends StatefulWidget {
 
 class _ChoosePersonalityState extends State<ChoosePersonality> {
   late OnBoardingProvider onBoardingProvider;
-
-  List<String> personalities = [
-    'Active',
-    'Affectionate',
-    'Barker',
-    'Calm',
-    'Clever',
-    'Energetic',
-    'Foodie',
-    'Friendly',
-    'Gentle',
-    'Happy',
-    'Lazy',
-    'Playful',
-    'Protective',
-    'Relaxed',
-    'Runner',
-    'Shy',
-    'Silly',
-    'Smart',
-    'Wrestler'
-  ];
 
   @override
   void initState() {
@@ -53,7 +33,10 @@ class _ChoosePersonalityState extends State<ChoosePersonality> {
             onPressed: () => Navigator.pop(context)),
         actions: [
           TextButton(
-              onPressed: () => Navigator.popUntil(context, ModalRoute.withName(Routes.login)),
+              onPressed: () {
+                onBoardingProvider.reset();
+                Navigator.popUntil(context, ModalRoute.withName(Routes.login));
+              },
               child: const Text("cancel", style: TextStyle(color: GetColors.black)))
         ],
       ),
@@ -70,7 +53,8 @@ class _ChoosePersonalityState extends State<ChoosePersonality> {
               const SizedBox(height: 25),
               Wrap(
                 spacing: 20,
-                children: List.generate(personalities.length, (index) => MultiSelectChip(personalities[index])),
+                children: List.generate(
+                    onBoardingProvider.personalities.length, (index) => MultiSelectChip(index, onBoardingProvider)),
               ),
               const SizedBox(height: 50),
               Center(
@@ -88,33 +72,50 @@ class _ChoosePersonalityState extends State<ChoosePersonality> {
   }
 
   onRegister() {
-    onBoardingProvider.onRegister(context);
+    if(onBoardingProvider.selectedPersonalities() > 0){
+      onBoardingProvider.addPersonalities();
+      onBoardingProvider.onRegister(context);
+    } else {
+      Utils.showSnackBar(context, "Choose at least one personality");
+    }
   }
 }
 
 class MultiSelectChip extends StatefulWidget {
-  String text;
+  int index;
+  OnBoardingProvider onBoardingProvider;
 
-  MultiSelectChip(this.text);
+  MultiSelectChip(this.index, this.onBoardingProvider);
 
   @override
   _MultiSelectChipState createState() => _MultiSelectChipState();
 }
 
 class _MultiSelectChipState extends State<MultiSelectChip> {
-  bool isSelected = false;
 
   @override
   Widget build(BuildContext context) {
     return ChoiceChip(
-      label: Text(widget.text),
+      label: Text(widget.onBoardingProvider.personalities[widget.index].text!),
       selectedColor: GetColors.purple.withOpacity(0.4),
-      selected: isSelected,
+      selected: widget.onBoardingProvider.personalities[widget.index].isSelected,
       onSelected: (selected) {
-        setState(() {
-          isSelected = selected;
-        });
+        if(!selected || widget.onBoardingProvider.selectedPersonalities() < 3){
+          setState(() {
+            widget.onBoardingProvider.personalities[widget.index].isSelected = selected;
+          });
+        }
       },
     );
+  }
+
+  bool checkSelectable (){
+    int i = 0;
+    for(var a in widget.onBoardingProvider.personalities){
+      if(a.isSelected){
+        i++;
+      }
+    }
+    return i < 3;
   }
 }

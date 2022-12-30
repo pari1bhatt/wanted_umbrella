@@ -27,7 +27,7 @@ class Routes {
   static const String dashboard = '/dashboard';
   static const String messege = '/messege';
 
-  //
+  //categories
   static const String find_a_mate = '/find_a_mate';
   static const String notification = '/notification';
   static const String chat_bot = '/chat_bot';

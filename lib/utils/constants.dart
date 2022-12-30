@@ -15,7 +15,7 @@ class GetStrings {
   static const String appName = 'Wanted Umbrella';
   static const String dogPhotosText =
       "You must upload a photo to create your profile.\nMake sure your dog's face is well lit and visible";
-  static const String chooseTraits = "Choose up to 5 traits you'd like to share about your pet.";
+  static const String chooseTraits = "Choose up to 3 traits you'd like to share about your pet.";
   static const String emptyChatMessage = "Once you have a mutual match with someone you'll be connected automatically. Messages are absolute free.";
 }
 

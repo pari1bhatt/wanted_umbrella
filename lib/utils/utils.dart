@@ -13,6 +13,10 @@ class Utils {
     ));
   }
 
+  static bool validateText(String text) {
+    return text.length < 2;
+  }
+
   static validateEmail(String text) {
     final bool emailValid =
         RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(text);
@@ -35,7 +39,7 @@ class Utils {
 
   static Future pickFile() async {
     FilePickerResult? result =
-        await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['jpg', 'pdf']);
+        await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['jpg', 'pdf','docx','png']);
     if (result != null) {
       PlatformFile file = result.files.first;
       return file;

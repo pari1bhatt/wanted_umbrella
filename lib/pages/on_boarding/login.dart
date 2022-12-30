@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wanted_umbrella/main.dart';
@@ -68,12 +69,12 @@ class LoginPageState extends State<LoginPage> {
   String emailText = 'Email doesn\'t match';
   String passwordText = 'password should be at least 6 letters';
   var presscount = 0;
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: onWillPop,
+      onWillPop: onWillPop,
       child: Scaffold(
-
         resizeToAvoidBottomInset: false,
         backgroundColor: GetColors.white,
         body: Container(
@@ -158,27 +159,25 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  onLogin() async{
-    if(Utils.validateEmail(email)){
+  onLogin() async {
+    if (Utils.validateEmail(email)) {
       setState(() => wrongEmail = true);
-    } else if (password.length < 6){
+    } else if (password.length < 6) {
       setState(() {
         wrongEmail = false;
         wrongPassword = true;
       });
     } else {
-
       try {
         setState(() {
           wrongEmail = false;
           wrongPassword = false;
         });
-        final newUser = await _auth.signInWithEmailAndPassword(
-            email: email, password: password);
+        final newUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
         print('check: ${newUser.toString()}');
 
         if (newUser != null) {
-        Navigator.pushNamed(context, Routes.dashboard);
+          Navigator.pushNamed(context, Routes.dashboard);
         }
       } on FirebaseAuthException catch (e) {
         print(e.code);
@@ -200,7 +199,7 @@ class LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<bool> onWillPop () async {
+  Future<bool> onWillPop() async {
     presscount++;
     if (presscount == 2) {
       exit(0);

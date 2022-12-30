@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
@@ -14,13 +13,12 @@ class KciCertificate extends StatefulWidget {
 }
 
 class _KciCertificateState extends State<KciCertificate> {
-  PlatformFile? selectedFile;
-
+  late OnBoardingProvider onBoardingProvider;
 
   @override
   void initState() {
-
     super.initState();
+    onBoardingProvider = Provider.of<OnBoardingProvider>(context, listen: false);
   }
 
   @override
@@ -35,7 +33,10 @@ class _KciCertificateState extends State<KciCertificate> {
             onPressed: () => Navigator.pop(context)),
         actions: [
           TextButton(
-              onPressed: () => Navigator.popUntil(context, ModalRoute.withName(Routes.login)),
+              onPressed: () {
+                onBoardingProvider.reset();
+                Navigator.popUntil(context, ModalRoute.withName(Routes.login));
+              },
               child: const Text("cancel", style: TextStyle(color: GetColors.black)))
         ],
       ),
@@ -55,9 +56,9 @@ class _KciCertificateState extends State<KciCertificate> {
                   width: 100,
                   color: GetColors.grey.withOpacity(0.5),
                   child: Center(
-                      child: Icon(selectedFile == null ? Icons.add : Icons.file_copy,
-                          color: selectedFile == null ? GetColors.black : GetColors.purple,
-                          size: selectedFile == null ? 20 : 40)),
+                      child: Icon(onBoardingProvider.selectedFile == null ? Icons.add : Icons.file_copy,
+                          color: onBoardingProvider.selectedFile == null ? GetColors.black : GetColors.purple,
+                          size: onBoardingProvider.selectedFile == null ? 20 : 40)),
                 ),
               ),
               const SizedBox(height: 50),
@@ -79,16 +80,16 @@ class _KciCertificateState extends State<KciCertificate> {
     var file = await Utils.pickFile();
     if (file != null) {
       setState(() {
-        selectedFile = file;
+        onBoardingProvider.selectedFile = file;
       });
     }
   }
 
   onNext() async {
-    if (selectedFile != null) {
-      Navigator.pushNamed(context, Routes.choose_personality);
-    } else {
+    if (onBoardingProvider.selectedFile == null) {
       Utils.showSnackBar(context, "Please select a document");
+    } else {
+      Navigator.pushNamed(context, Routes.choose_personality);
     }
   }
 }
