@@ -8,18 +8,17 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:wanted_umbrella/models/selection_model.dart';
 import 'package:wanted_umbrella/models/user_model.dart';
-import 'package:wanted_umbrella/utils/constants.dart';
+import 'package:wanted_umbrella/utils/prefs.dart';
 import 'package:wanted_umbrella/utils/utils.dart';
 
 import '../../routes.dart';
 
 class OnBoardingProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  Reference reference = FirebaseStorage.instance.ref();
+  var userCol = FirebaseFirestore.instance.collection('users');
   UserModel userModel = UserModel();
+  UserModel? currentUserModel;
 
-  // String regName = '';
-  // String regEmail = '';
   String regPassword = '';
 
   List<File?> imageList = [];
@@ -49,11 +48,13 @@ class OnBoardingProvider extends ChangeNotifier {
   onRegister(BuildContext context) async {
     print("data check: ${userModel.toJson()}");
 
+    Utils.showLoadingDialog(context);
+
     if (await registerFirebaseAuth(context) &&
         await uploadImagesToFirebase() &&
         await uploadFileToFirebase() &&
         await addDataToFirebase()) {
-      print("data check final: ${userModel.toJson()}");
+      Navigator.popUntil(context, ModalRoute.withName(Routes.choose_personality));
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,
@@ -65,7 +66,7 @@ class OnBoardingProvider extends ChangeNotifier {
         btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.login)),
       ).show();
     } else {
-      Utils.showSnackBar(context, "Something went Wrong");
+      Navigator.popUntil(context, ModalRoute.withName(Routes.choose_personality));
     }
   }
 
@@ -120,25 +121,6 @@ class OnBoardingProvider extends ChangeNotifier {
       debugPrint("Failed to add new data due to $e");
     }
     return true;
-
-    // FirebaseFirestore.instance.collection("users").add({
-    //   'email': "example@email.com",
-    //   'dog_name': 'Bunty',
-    //   'breed': 'Miniature pinscher',
-    //   'gender': 'Male',
-    //   'size': 'miniature',
-    //   'age': '2 months',
-    //   'bio': 'This is example of dog bio',
-    //   'personality1': 'Active',
-    //   'personality2': 'Gentle',
-    //   'personality3': 'Happy',
-    // }).then((value) {
-    //   debugPrint('value.id : ${value.id}');
-    //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //     content: Text("Note added"),
-    //     backgroundColor: GetColors.green,
-    //   ));
-    // }).catchError((error) => debugPrint("Failed to add new Note due to $error"));
   }
 
   int selectedPersonalities() {
@@ -157,6 +139,20 @@ class OnBoardingProvider extends ChangeNotifier {
       if (a.isSelected) {
         userModel.personalities?.add(a.text!);
       }
+    }
+  }
+
+  getCurrentUserData(BuildContext context) async {
+    var value = await userCol.where('email', isEqualTo: Prefs.getUserEmail()).get();
+    print("value: ${value.docs.length}");
+    if(value.docs.length == 1){
+      currentUserModel =null;
+      value.docs.forEach((document) {
+        currentUserModel = UserModel.fromJson(document.data());
+        currentUserModel?.id = document.id;
+      });
+    } else {
+      Utils.showSnackBar(context, "Something went wrong");
     }
   }
 

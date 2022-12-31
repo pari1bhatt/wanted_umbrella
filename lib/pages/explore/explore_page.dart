@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
+import 'package:wanted_umbrella/pages/dashboard_provider.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 
 import '../../models/dog_data.dart';
@@ -14,89 +16,54 @@ class ExplorePage extends StatefulWidget {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
-  late MatchEngine _matchEngine;
-  List<DogData> dogData = [
-    DogData(text: "Doggo", image: GetImages.dog1, breed: 'Corgi', age: '2', personalities: ['Calm', 'Happy']),
-    DogData(text: "Bunty", image: GetImages.dog2_1, breed: 'Husky', age: '5', personalities: ['Energetic', 'Happy']),
-    DogData(text: "Rocky", image: GetImages.dog2_2, breed: 'Husky', age: '2', personalities: ['Calm', 'Happy']),
-    DogData(text: "Puppy", image: GetImages.dog2_3, breed: 'Husky', age: '11', personalities: ['Calm']),
-    DogData(text: "Boy", image: GetImages.dog3, breed: 'Corgi', age: '8', personalities: ['Happy'])
-  ];
-  List<SwipeItem> swipeItems = [];
+  late DashboardProvider provider;
+
   bool isStackFinished = false;
 
   late Size size;
 
   @override
   void initState() {
-    loadData();
     super.initState();
-  }
-
-  loadData() async {
-    swipeItems = [];
-    for (int i = 0; i < dogData.length; i++) {
-      swipeItems.add(SwipeItem(
-          content: DogData(text: dogData[i].text),
-          likeAction: () {
-            Utils.showSnackBar(context, "Liked ${dogData[i].text}");
-          },
-          nopeAction: () {
-            Utils.showSnackBar(context, "Nope ${dogData[i].text}");
-          },
-          superlikeAction: () {
-            Utils.showSnackBar(context, "Superliked ${dogData[i].text}");
-          },
-          onSlideUpdate: (SlideRegion? region) async {
-            print("Region $region");
-          }));
-    }
-    _matchEngine = MatchEngine(swipeItems: swipeItems);
-    isStackFinished = false;
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
+    provider = Provider.of<DashboardProvider>(context);
     return Center(
-      child: false
-          ? const CircularProgressIndicator(color: GetColors.white)
-          : Container(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-                gradient: LinearGradient(
-                    colors: [Color(0xFFCC3DE5), Color(0xFF933DC8), Color(0xFF1647BF)],
-                    begin: FractionalOffset(0, 0),
-                    end: FractionalOffset(0.5, 1.2)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Center(
-                    child: SizedBox(
-                        height: size.height - (size.width * .32 + MediaQuery.of(context).padding.top),
-                        child: isStackFinished
-                            ? Center(
-                                child: TextButton(
-                                    onPressed: loadData,
-                                    child: const Text(
-                                      "Reload",
-                                      style: TextStyle(color: GetColors.white),
-                                    )))
-                            : swipeCards()),
+      child: Container(
+        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          gradient: LinearGradient(
+              colors: [Color(0xFFCC3DE5), Color(0xFF933DC8), Color(0xFF1647BF)],
+              begin: FractionalOffset(0, 0),
+              end: FractionalOffset(0.5, 1.2)),
+        ),
+        child: provider.isExploreLoading
+            ? const Center(child: CircularProgressIndicator(color: GetColors.white))
+            : isStackFinished || provider.matchEngine?.currentItem == null
+                ? const Center(child: Text("No data found"))
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Center(
+                        child: SizedBox(
+                            height: size.height -
+                                (size.width * .32 + MediaQuery.of(context).padding.top),
+                            child: swipeCards(provider)),
+                      ),
+                      likeDislikeButtons()
+                    ],
                   ),
-                  likeDislikeButtons()
-                ],
-              ),
-            ),
+      ),
     );
   }
 
-  swipeCards() {
+  swipeCards(DashboardProvider bloc) {
     return SwipeCards(
-      matchEngine: _matchEngine,
+      matchEngine: bloc.matchEngine!,
       itemBuilder: (BuildContext context, int index) {
         return Stack(
           fit: StackFit.expand,
@@ -113,8 +80,9 @@ class _ExplorePageState extends State<ExplorePage> {
                 padding: const EdgeInsets.all(3),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    dogData[index].image ?? GetImages.done,
+                  child: Image.network(
+                    bloc.exploreData[index].dog_images?.first ??
+                        'https://dummyimage.com/300x300/fff/aaa',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -122,8 +90,8 @@ class _ExplorePageState extends State<ExplorePage> {
             ),
             Container(
               margin: const EdgeInsets.all(20),
-              decoration:
-                  const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(24)), color: Colors.black26),
+              decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(24)), color: Colors.black26),
             ),
             Align(
               alignment: Alignment.bottomCenter,
@@ -150,15 +118,17 @@ class _ExplorePageState extends State<ExplorePage> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  '${dogData[index].text}  ',
+                                  '${bloc.exploreData[index].name}  ',
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   softWrap: false,
                                   style: const TextStyle(
-                                      color: GetColors.white, fontSize: 25, fontWeight: FontWeight.bold),
+                                      color: GetColors.white,
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  '${dogData[index].breed}',
+                                  '${bloc.exploreData[index].breed}',
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   softWrap: false,
@@ -171,12 +141,12 @@ class _ExplorePageState extends State<ExplorePage> {
                         Flexible(
                           child: Row(
                             children: List.generate(
-                                dogData[index].personalities?.length ?? 0,
+                                bloc.exploreData[index].personalities?.length ?? 0,
                                 (i) => Row(
                                       children: [
                                         Chip(
                                           padding: EdgeInsets.zero,
-                                          label: Text(dogData[index].personalities![i]),
+                                          label: Text(bloc.exploreData[index].personalities![i]),
                                         ),
                                         const SizedBox(width: 5)
                                       ],
@@ -185,32 +155,32 @@ class _ExplorePageState extends State<ExplorePage> {
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.directions_sharp,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          "Profile",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            overflow: TextOverflow.ellipsis,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          elevation: 8,
-                          shadowColor: Colors.deepPurple,
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(8),
+                    //   child: ElevatedButton.icon(
+                    //     onPressed: () {},
+                    //     icon: const Icon(
+                    //       Icons.directions_sharp,
+                    //       color: Colors.white,
+                    //     ),
+                    //     label: const Text(
+                    //       "Profile",
+                    //       style: TextStyle(
+                    //         color: Colors.white,
+                    //         fontSize: 14,
+                    //         overflow: TextOverflow.ellipsis,
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //     ),
+                    //     style: ElevatedButton.styleFrom(
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(30),
+                    //       ),
+                    //       elevation: 8,
+                    //       shadowColor: Colors.deepPurple,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -250,7 +220,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 color: Colors.red,
               ),
               onPressed: () {
-                _matchEngine.currentItem?.nope();
+                provider.matchEngine?.currentItem?.nope();
               },
               // child: const Text("Nope"),
             ),
@@ -298,7 +268,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 color: Colors.red,
               ),
               onPressed: () {
-                _matchEngine.currentItem?.like();
+                provider.matchEngine?.currentItem?.like();
               },
               //  child: const Text("Like"),
             ),

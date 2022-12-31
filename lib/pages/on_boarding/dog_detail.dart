@@ -46,12 +46,14 @@ class _DogDetailState extends State<DogDetail> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text("Details about your dog:",
-                  style: TextStyle(fontSize: 22, color: GetColors.black, fontWeight: FontWeight.w600)),
+                  style:
+                      TextStyle(fontSize: 22, color: GetColors.black, fontWeight: FontWeight.w600)),
               const SizedBox(height: 30),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Expanded(flex: 3, child: Text("Dog name", style: TextStyle(color: GetColors.black))),
+                  const Expanded(
+                      flex: 3, child: Text("Dog name", style: TextStyle(color: GetColors.black))),
                   Expanded(
                     flex: 7,
                     child: TextFormField(
@@ -67,7 +69,9 @@ class _DogDetailState extends State<DogDetail> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  const Expanded(flex: 3, child: Text("Enter breed", style: TextStyle(color: GetColors.black))),
+                  const Expanded(
+                      flex: 3,
+                      child: Text("Enter breed", style: TextStyle(color: GetColors.black))),
                   Expanded(
                     flex: 7,
                     child: TextFormField(
@@ -83,7 +87,9 @@ class _DogDetailState extends State<DogDetail> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  const Expanded(flex: 3, child: Text("Choose gender", style: TextStyle(color: GetColors.black))),
+                  const Expanded(
+                      flex: 3,
+                      child: Text("Choose gender", style: TextStyle(color: GetColors.black))),
                   Expanded(
                     flex: 7,
                     child: DropdownButton<String>(
@@ -94,7 +100,8 @@ class _DogDetailState extends State<DogDetail> {
                           onBoardingProvider.userModel.gender = newValue;
                         });
                       },
-                      items: <String>['Male', 'Female'].map<DropdownMenuItem<String>>((String value) {
+                      items:
+                          <String>['Male', 'Female'].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -107,7 +114,9 @@ class _DogDetailState extends State<DogDetail> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  const Expanded(flex: 3, child: Text("Choose size", style: TextStyle(color: GetColors.black))),
+                  const Expanded(
+                      flex: 3,
+                      child: Text("Choose size", style: TextStyle(color: GetColors.black))),
                   Expanded(
                     flex: 7,
                     child: DropdownButton<String>(
@@ -132,7 +141,8 @@ class _DogDetailState extends State<DogDetail> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  const Expanded(flex: 3, child: Text("Enter age", style: TextStyle(color: GetColors.black))),
+                  const Expanded(
+                      flex: 3, child: Text("Enter age", style: TextStyle(color: GetColors.black))),
                   Expanded(
                     flex: 7,
                     child: TextFormField(
@@ -140,7 +150,7 @@ class _DogDetailState extends State<DogDetail> {
                       onChanged: (value) {
                         onBoardingProvider.userModel.age = value;
                       },
-                      decoration: const InputDecoration(hintText: 'Age in years', isDense: true),
+                      decoration: const InputDecoration(hintText: 'Age in months', isDense: true),
                     ),
                   ),
                 ],
@@ -148,7 +158,8 @@ class _DogDetailState extends State<DogDetail> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  const Expanded(flex: 3, child: Text("Bio", style: TextStyle(color: GetColors.black))),
+                  const Expanded(
+                      flex: 3, child: Text("Bio", style: TextStyle(color: GetColors.black))),
                   Expanded(
                     flex: 7,
                     child: TextFormField(
@@ -159,7 +170,9 @@ class _DogDetailState extends State<DogDetail> {
                         onBoardingProvider.userModel.bio = value;
                       },
                       decoration: const InputDecoration(
-                          hintText: 'Please enter bio', isDense: true, border: OutlineInputBorder()),
+                          hintText: 'Please enter bio',
+                          isDense: true,
+                          border: OutlineInputBorder()),
                     ),
                   ),
                 ],
@@ -182,19 +195,17 @@ class _DogDetailState extends State<DogDetail> {
   onNext() {
     if (onBoardingProvider.userModel.dog_name?.isEmpty ?? true) {
       Utils.showSnackBar(context, "Please enter dog name");
-    }
-    else if(onBoardingProvider.userModel.breed?.isEmpty ?? true){
+    } else if (onBoardingProvider.userModel.breed?.isEmpty ?? true) {
       Utils.showSnackBar(context, "Please enter breed");
-    } else if(onBoardingProvider.userModel.gender?.isEmpty ?? true){
+    } else if (onBoardingProvider.userModel.gender?.isEmpty ?? true) {
       Utils.showSnackBar(context, "Please Select gender");
-    } else if(onBoardingProvider.userModel.size?.isEmpty ?? true){
+    } else if (onBoardingProvider.userModel.size?.isEmpty ?? true) {
       Utils.showSnackBar(context, "Please Select size");
-    } else if(onBoardingProvider.userModel.age?.isEmpty ?? true){
+    } else if (onBoardingProvider.userModel.age?.isEmpty ?? true) {
       Utils.showSnackBar(context, "Please enter age");
-    } else if(onBoardingProvider.userModel.bio?.isEmpty ?? true){
+    } else if (onBoardingProvider.userModel.bio?.isEmpty ?? true) {
       Utils.showSnackBar(context, "Please enter bio");
-    }
-    else {
+    } else {
       Navigator.pushNamed(context, Routes.dog_photos);
     }
   }

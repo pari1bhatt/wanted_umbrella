@@ -51,7 +51,7 @@ class Routes {
       case kci_certificate:
         return MaterialPageRoute(builder: (_) => const KciCertificate());
       case choose_personality:
-        return MaterialPageRoute(builder: (_) => const ChoosePersonality());
+        return MaterialPageRoute(builder: (_) => const ChoosePersonality(), settings: const RouteSettings(name: choose_personality));
       case messege:
         return MaterialPageRoute(builder: (_) => const MessageScreen());
       case find_a_mate:

@@ -1,11 +1,15 @@
 import 'dart:io';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wanted_umbrella/main.dart';
+import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
 import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
+import 'package:wanted_umbrella/utils/prefs.dart';
 import 'package:wanted_umbrella/utils/utils.dart';
 
 // FirebaseUser _user;
@@ -18,8 +22,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  String email = '';
-  String password = '';
+  String email = 'pari@gmail.com';
+  String password = 'Paritosh@43';
 
   bool wrongEmail = false;
   bool wrongPassword = false;
@@ -168,19 +172,25 @@ class LoginPageState extends State<LoginPage> {
         wrongPassword = true;
       });
     } else {
+      Utils.showLoadingDialog(context);
       try {
         setState(() {
           wrongEmail = false;
           wrongPassword = false;
         });
-        final newUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
-        print('check: ${newUser.toString()}');
-
-        if (newUser != null) {
+        await _auth.signInWithEmailAndPassword(email: email, password: password);
+        await Prefs.setUserEmail(email);
+        OnBoardingProvider provider = Provider.of<OnBoardingProvider>(context,listen: false);
+        await provider.getCurrentUserData(context);
+        Navigator.popUntil(context, ModalRoute.withName(Routes.login));
+        if(provider.currentUserModel?.isKciApproved ?? false){
           Navigator.pushNamed(context, Routes.dashboard);
+        } else {
+          showKciDialog();
         }
       } on FirebaseAuthException catch (e) {
         print(e.code);
+        Navigator.popUntil(context, ModalRoute.withName(Routes.login));
         if (e.code == 'wrong-password') {
           setState(() {
             wrongPassword = true;
@@ -197,6 +207,19 @@ class LoginPageState extends State<LoginPage> {
         }
       }
     }
+  }
+
+  showKciDialog (){
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.info,
+      animType: AnimType.scale,
+      dismissOnTouchOutside: false,
+      title: 'KCI not approved',
+      desc: 'Please contact admin - wanted.umbrella27@gmail.com',
+      btnCancel: null,
+      btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.login)),
+    ).show();
   }
 
   Future<bool> onWillPop() async {
