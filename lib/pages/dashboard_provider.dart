@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,7 @@ class DashboardProvider extends ChangeNotifier {
   UserModel? currentUserModel;
 
   getExploreData(BuildContext context) async {
-    OnBoardingProvider provider = Provider.of<OnBoardingProvider>(context,listen: false);
+    OnBoardingProvider provider = Provider.of<OnBoardingProvider>(context, listen: false);
     currentUserModel = provider.currentUserModel;
 
     await userCol.where('email', isNotEqualTo: Prefs.getUserEmail()).get().then((value) async {
@@ -57,5 +58,27 @@ class DashboardProvider extends ChangeNotifier {
     });
   }
 
+  onUpdateProfile(UserModel? model, context) {
+    userCol.doc(model!.id).update(model.toJson()).then((value) {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.scale,
+        dismissOnTouchOutside: false,
+        title: 'Success',
+        desc: 'Dog details updated',
+        btnCancel: null,
+        btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+      ).show();
+      currentUserModel = UserModel.fromJson(model.toJson());
+      notifyListeners();
+    });
+  }
 
+  reset() {
+    exploreData = [];
+    swipeItems = [];
+    matchEngine = null;
+    isExploreLoading = true;
+  }
 }

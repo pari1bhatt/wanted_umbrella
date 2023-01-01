@@ -13,7 +13,7 @@ class AdoptADog extends StatefulWidget {
 }
 
 class _AdoptADogState extends State<AdoptADog> {
-  final List<SelectionModel> items = [
+  List<SelectionModel> items = [
     SelectionModel(text: 'Bunty - Bulldog', text2: '12, Male', image: GetImages.dog4),
     SelectionModel(text: 'Joker - Husky', text2: '5, Female', image: GetImages.dog2_2),
   ];
@@ -73,7 +73,7 @@ class _AdoptADogState extends State<AdoptADog> {
                       color: GetColors.purple.withOpacity(0.8),
                       borderRadius: BorderRadius.circular(8)),
                   child: Text(
-                    items[index].isSelected ? "booked" : "book",
+                    "book",
                     style: const TextStyle(color: GetColors.white),
                   )),
             ),
@@ -85,6 +85,7 @@ class _AdoptADogState extends State<AdoptADog> {
 
   successDialog(context, index) {
     if (!items[index].isSelected) {
+
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,
@@ -95,7 +96,7 @@ class _AdoptADogState extends State<AdoptADog> {
         btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.adopt_a_dog)),
       ).show();
       setState(() {
-        items[index].isSelected = true;
+        items.removeAt(index);
       });
     }
   }

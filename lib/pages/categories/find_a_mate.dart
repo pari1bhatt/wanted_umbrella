@@ -1,5 +1,8 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
+
+import '../../routes.dart';
 
 class FindAMate extends StatefulWidget {
   const FindAMate({Key? key}) : super(key: key);
@@ -221,7 +224,7 @@ class _FindAMateState extends State<FindAMate> {
             ),
             const SizedBox(height: 20),
             TextButton(
-              onPressed: () {},
+              onPressed: onRequest,
               style: TextButton.styleFrom(backgroundColor: GetColors.purple, padding: EdgeInsets.all(12)),
               child: Text("Request to book", style: TextStyle(color: GetColors.white)),
             ),
@@ -229,5 +232,18 @@ class _FindAMateState extends State<FindAMate> {
         ),
       ),
     );
+  }
+
+  onRequest(){
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.scale,
+      dismissOnTouchOutside: false,
+      title: 'Success',
+      desc: 'Breeding request sent!',
+      btnCancel: null,
+      btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+    ).show();
   }
 }

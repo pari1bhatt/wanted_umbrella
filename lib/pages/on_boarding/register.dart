@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wanted_umbrella/main.dart';
 import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
@@ -55,6 +56,7 @@ class RegisterPageState extends State<RegisterPage> {
               children: [
                 TextField(
                   keyboardType: TextInputType.name,
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]"))],
                   onChanged: (value) {
                     onBoardingProvider.userModel.name = value;
                   },

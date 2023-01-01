@@ -63,7 +63,10 @@ class OnBoardingProvider extends ChangeNotifier {
         title: 'Registration Success',
         desc: 'You can now login with your email : ${userModel.email}',
         btnCancel: null,
-        btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.login)),
+        btnOkOnPress: () {
+          reset();
+          Navigator.popUntil(context, ModalRoute.withName(Routes.login));
+        },
       ).show();
     } else {
       Navigator.popUntil(context, ModalRoute.withName(Routes.choose_personality));
@@ -88,7 +91,8 @@ class OnBoardingProvider extends ChangeNotifier {
     for (var element in imageList) {
       String fileName = element!.path.split('/').last;
       try {
-        Reference reference = FirebaseStorage.instance.ref().child('${userModel.email}/photos/$fileName');
+        Reference reference =
+            FirebaseStorage.instance.ref().child('${userModel.email}/photos/$fileName');
         await reference.putFile(element);
         URLs.add(await reference.getDownloadURL());
       } catch (e) {
@@ -103,7 +107,8 @@ class OnBoardingProvider extends ChangeNotifier {
     File kciFile = File(selectedFile!.path!);
     String fileName = kciFile.path.split('/').last;
     try {
-      Reference reference = FirebaseStorage.instance.ref().child('${userModel.email}/kci/$fileName');
+      Reference reference =
+          FirebaseStorage.instance.ref().child('${userModel.email}/kci/$fileName');
       await reference.putFile(kciFile);
       userModel.kci_certificate = await reference.getDownloadURL();
     } catch (e) {
@@ -145,8 +150,8 @@ class OnBoardingProvider extends ChangeNotifier {
   getCurrentUserData(BuildContext context) async {
     var value = await userCol.where('email', isEqualTo: Prefs.getUserEmail()).get();
     print("value: ${value.docs.length}");
-    if(value.docs.length == 1){
-      currentUserModel =null;
+    if (value.docs.length == 1) {
+      currentUserModel = null;
       value.docs.forEach((document) {
         currentUserModel = UserModel.fromJson(document.data());
         currentUserModel?.id = document.id;

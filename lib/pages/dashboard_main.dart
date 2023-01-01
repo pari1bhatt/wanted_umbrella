@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:wanted_umbrella/pages/categories/categories_page.dart';
 import 'package:wanted_umbrella/pages/dashboard_provider.dart';
 import 'package:wanted_umbrella/pages/explore/explore_page.dart';
+import 'package:wanted_umbrella/pages/profile/profile_page.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
-
 import 'chat/chat_screen.dart';
 
 
@@ -33,6 +33,12 @@ class _DashboardState extends State<Dashboard> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       provider.getExploreData(context);
     });
+  }
+
+  @override
+  void dispose() {
+    provider.reset();
+    super.dispose();
   }
 
   @override
@@ -108,7 +114,7 @@ class _DashboardState extends State<Dashboard> {
       case 2:
         return const CategoriesPage();
       case 3:
-        return const Center(child: Text("Profile - Coming Soon", style: TextStyle(color: GetColors.white)));
+        return const ProfilePage();
     }
   }
 }

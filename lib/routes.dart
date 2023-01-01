@@ -14,6 +14,9 @@ import 'package:wanted_umbrella/pages/on_boarding/forgot_password.dart';
 import 'package:wanted_umbrella/pages/on_boarding/kci_certificate.dart';
 import 'package:wanted_umbrella/pages/on_boarding/login.dart';
 import 'package:wanted_umbrella/pages/on_boarding/register.dart';
+import 'package:wanted_umbrella/pages/profile/adoption.dart';
+import 'package:wanted_umbrella/pages/profile/dog_profile.dart';
+import 'package:wanted_umbrella/pages/profile/vaccination.dart';
 
 import 'pages/on_boarding/dog_detail.dart';
 import 'pages/on_boarding/dog_photos.dart';
@@ -41,6 +44,11 @@ class Routes {
   static const String gift = '/gift';
   static const String articles_shows = '/articles_shows';
   static const String train_pup = '/train_pup';
+
+  //profle
+  static const String dog_profile = '/dog_profile';
+  static const String vaccination = '/vaccination';
+  static const String adoption = '/adoption';
 
 
 
@@ -80,6 +88,12 @@ class Routes {
         return MaterialPageRoute(builder: (_) => ArticlesShows(),settings: const RouteSettings(name: articles_shows));
       case train_pup:
         return MaterialPageRoute(builder: (_) => TrainPup(),settings: const RouteSettings(name: train_pup));
+      case dog_profile:
+        return MaterialPageRoute(builder: (_) => DogProfile(),settings: const RouteSettings(name: dog_profile));
+      case vaccination:
+        return MaterialPageRoute(builder: (_) => Vaccination(),settings: const RouteSettings(name: vaccination));
+      case adoption:
+        return MaterialPageRoute(builder: (_) => Adoption(),settings: const RouteSettings(name: adoption));
     }
     return MaterialPageRoute(builder: (_) => Container());
   }

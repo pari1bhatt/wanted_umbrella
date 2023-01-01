@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
 import 'package:wanted_umbrella/routes.dart';
@@ -58,6 +59,7 @@ class _DogDetailState extends State<DogDetail> {
                     flex: 7,
                     child: TextFormField(
                       keyboardType: TextInputType.name,
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]"))],
                       onChanged: (value) {
                         onBoardingProvider.userModel.dog_name = value;
                       },
@@ -76,6 +78,7 @@ class _DogDetailState extends State<DogDetail> {
                     flex: 7,
                     child: TextFormField(
                       keyboardType: TextInputType.name,
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]"))],
                       onChanged: (value) {
                         onBoardingProvider.userModel.breed = value;
                       },

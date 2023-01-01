@@ -4,11 +4,14 @@ class GetColors {
   static const Color transparent = Colors.transparent;
   static const Color white = Colors.white;
   static const Color black = Colors.black;
+  static const Color black87 = Colors.black87;
   static const Color yellow = Colors.yellow;
   static const Color blue = Colors.blue;
+  static const Color lightBlue = Colors.lightBlue;
   static const Color green = Colors.green;
   static const Color grey = Colors.grey;
   static const Color purple = Colors.purple;
+  static const Color red = Colors.red;
 }
 
 class GetStrings {
@@ -23,6 +26,7 @@ class GetImages {
   static const String done = 'assets/images/done.jpg';
   static const String robot_icon = 'assets/images/robot_icon.png';
   static const String flowers_gift = 'assets/images/flowers_gift.jpg';
+  static const String placeholderNetwork = 'https://dummyimage.com/300x300/fff/aaa';
 
   //categories
   static const String adopt_a_dog = 'assets/images/adopt_a_dog.jpg';

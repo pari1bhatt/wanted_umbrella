@@ -28,47 +28,8 @@ class LoginPageState extends State<LoginPage> {
   bool wrongEmail = false;
   bool wrongPassword = false;
 
-  // final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-//   Future<FirebaseUser> _handleSignIn() async {
-//     // hold the instance of the authenticated user
-// //    FirebaseUser user;
-//     // flag to check whether we're signed in already
-//     bool isSignedIn = await _googleSignIn.isSignedIn();
-//     if (isSignedIn) {
-//       // if so, return the current user
-//       _user = await _auth.currentUser();
-//     } else {
-//       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-//       final GoogleSignInAuthentication googleAuth =
-//       await googleUser.authentication;
-//       // get the credentials to (access / id token)
-//       // to sign in via Firebase Authentication
-//       final AuthCredential credential = GoogleAuthProvider.getCredential(
-//           accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-//       _user = (await _auth.signInWithCredential(credential)).user;
-//     }
-//
-//     return _user;
-//   }
-
-  // void onGoogleSignIn(BuildContext context) async {
-  //   setState(() {
-  //     _showSpinner = true;
-  //   });
-  //
-  //   FirebaseUser user = await _handleSignIn();
-  //
-  //   setState(() {
-  //     _showSpinner = true;
-  //   });
-  //
-  //   Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (context) => GoogleDone(user, _googleSignIn)));
-  // }
 
   String emailText = 'Email doesn\'t match';
   String passwordText = 'password should be at least 6 letters';
