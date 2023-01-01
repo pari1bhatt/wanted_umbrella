@@ -38,65 +38,64 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
-    return Consumer<DashboardProvider>(builder: (_, bloc, __) {
-      return Scaffold(
-        extendBody: true,
-        resizeToAvoidBottomInset: false,
-        body: onPageSelection(),
-        bottomNavigationBar: Container(
-          height: size.width * .155,
-          decoration: BoxDecoration(
-            color: GetColors.white,
-            boxShadow: [
-              BoxShadow(color: GetColors.black.withOpacity(0.3), blurRadius: 5, offset: const Offset(0, 0)),
-            ],
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(
-                4,
-                    (index) => InkWell(
-                  onTap: () {
-                    setState(() {
-                      currentIndex = index;
-                    });
-                  },
-                  splashColor: GetColors.transparent,
-                  highlightColor: GetColors.transparent,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 1500),
-                        curve: Curves.fastLinearToSlowEaseIn,
-                        margin: EdgeInsets.only(
-                          bottom: index == currentIndex ? 0 : size.width * .029,
-                          right: size.width * .0422,
-                          left: size.width * .0422,
-                        ),
-                        width: size.width * .128,
-                        height: index == currentIndex ? size.width * .014 : 0,
-                        decoration: const BoxDecoration(
-                          color: GetColors.purple,
-                          borderRadius: BorderRadius.vertical(
-                            bottom: Radius.circular(10),
-                          ),
-                        ),
-                      ),
-                      Icon(
-                        listOfIcons[index],
-                        size: size.width * .076,
-                        color: index == currentIndex ? GetColors.purple : GetColors.grey,
-                      ),
-                      SizedBox(height: size.width * .03),
-                    ],
-                  ),
-                )),
-          ),
+    return Scaffold(
+      extendBody: true,
+      resizeToAvoidBottomInset: false,
+      body: onPageSelection(),
+      bottomNavigationBar: Container(
+        height: size.width * .155,
+        decoration: BoxDecoration(
+          color: GetColors.white,
+          boxShadow: [
+            BoxShadow(color: GetColors.black.withOpacity(0.3), blurRadius: 5, offset: const Offset(0, 0)),
+          ],
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
         ),
-      );
-    });
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(
+              4,
+                  (index) => InkWell(
+                onTap: () {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                splashColor: GetColors.transparent,
+                highlightColor: GetColors.transparent,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 1500),
+                      curve: Curves.fastLinearToSlowEaseIn,
+                      margin: EdgeInsets.only(
+                        bottom: index == currentIndex ? 0 : size.width * .029,
+                        right: size.width * .0422,
+                        left: size.width * .0422,
+                      ),
+                      width: size.width * .128,
+                      height: index == currentIndex ? size.width * .014 : 0,
+                      decoration: const BoxDecoration(
+                        color: GetColors.purple,
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(10),
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      listOfIcons[index],
+                      size: size.width * .076,
+                      color: index == currentIndex ? GetColors.purple : GetColors.grey,
+                    ),
+                    SizedBox(height: size.width * .03),
+                  ],
+                ),
+              )),
+        ),
+      ),
+    );
+
 
   }
 

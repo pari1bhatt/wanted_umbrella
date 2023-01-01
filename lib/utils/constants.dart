@@ -22,6 +22,26 @@ class GetStrings {
 class GetImages {
   static const String done = 'assets/images/done.jpg';
   static const String robot_icon = 'assets/images/robot_icon.png';
+  static const String flowers_gift = 'assets/images/flowers_gift.jpg';
+
+  //categories
+  static const String adopt_a_dog = 'assets/images/adopt_a_dog.jpg';
+  static const String chatbot = 'assets/images/chatbot.jpg';
+  static const String dog_articles_and_events = 'assets/images/dog_articles_and_events.jpg';
+  static const String find_a_mate = 'assets/images/find_a_mate.jpg';
+  static const String gift_your_loved_ones = 'assets/images/gift_your_loved_ones.jpg';
+  static const String maps = 'assets/images/maps.jpg';
+  static const String notifications = 'assets/images/notifications.jpg';
+  static const String train_your_pup = 'assets/images/train_your_pup.jpg';
+
+  //events
+  static const String event1 = 'assets/images/event1.png';
+  static const String event2 = 'assets/images/event2.jpg';
+  static const String event3 = 'assets/images/event3.jpg';
+  static const String event4 = 'assets/images/event4.jpg';
+  static const String event5 = 'assets/images/event5.jpg';
+
+  //dogs
   static const String dog1 = 'assets/images/dog_1.jpg';
   static const String dog2_1 = 'assets/images/dog_2_1.jpg';
   static const String dog2_2 = 'assets/images/dog_2_2.jpg';

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 
+import '../../models/selection_model.dart';
+
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({Key? key}) : super(key: key);
 
@@ -10,15 +12,15 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
-  List<String> categories = [
-    'Find a mate',
-    'Notifications',
-    'Adopt a dog',
-    'Maps',
-    'Chatbot',
-    'Gift your loved ones',
-    'dog articles and shows',
-    'Train your pup'
+  final List<SelectionModel> categories = [
+    SelectionModel(text: 'Find a mate',image: GetImages.find_a_mate),
+    SelectionModel(text: 'Notifications',image: GetImages.notifications),
+    SelectionModel(text: 'Adopt a dog',image: GetImages.adopt_a_dog),
+    SelectionModel(text: 'Maps',image: GetImages.maps),
+    SelectionModel(text: 'Chatbot',image: GetImages.chatbot),
+    SelectionModel(text: 'Gift your loved ones',image: GetImages.gift_your_loved_ones),
+    SelectionModel(text: 'dog articles and shows',image: GetImages.dog_articles_and_events),
+    SelectionModel(text: 'Train your pup',image: GetImages.train_your_pup),
   ];
 
   @override
@@ -55,7 +57,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(20),
                             child: Image.asset(
-                              GetImages.dog2_3,
+                              categories[index].image ?? GetImages.dog1,
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -67,7 +69,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(color: GetColors.purple.withOpacity(0.8),borderRadius: BorderRadius.circular(8)),
                             child: Text(
-                              categories[index],
+                              categories[index].text ?? '',
                               style: const TextStyle(color: GetColors.white),
                             )),
                       ),
@@ -89,22 +91,22 @@ class _CategoriesPageState extends State<CategoriesPage> {
         Navigator.pushNamed(context, Routes.notification);
         break;
       case 2:
-        Navigator.pushNamed(context, Routes.find_a_mate);
+        Navigator.pushNamed(context, Routes.adopt_a_dog);
         break;
       case 3:
-        Navigator.pushNamed(context, Routes.find_a_mate);
+        Navigator.pushNamed(context, Routes.maps);
         break;
       case 4:
         Navigator.pushNamed(context, Routes.chat_bot);
         break;
       case 5:
-        Navigator.pushNamed(context, Routes.find_a_mate);
+        Navigator.pushNamed(context, Routes.gift);
         break;
       case 6:
-        Navigator.pushNamed(context, Routes.find_a_mate);
+        Navigator.pushNamed(context, Routes.articles_shows);
         break;
       case 7:
-        Navigator.pushNamed(context, Routes.find_a_mate);
+        Navigator.pushNamed(context, Routes.train_pup);
         break;
     }
   }

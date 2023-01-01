@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:wanted_umbrella/pages/categories/adopt_a_dog.dart';
+import 'package:wanted_umbrella/pages/categories/articles_shows.dart';
 import 'package:wanted_umbrella/pages/categories/chat_bot.dart';
 import 'package:wanted_umbrella/pages/categories/find_a_mate.dart';
+import 'package:wanted_umbrella/pages/categories/gift.dart';
+import 'package:wanted_umbrella/pages/categories/maps.dart';
 import 'package:wanted_umbrella/pages/categories/notification_page.dart';
+import 'package:wanted_umbrella/pages/categories/train_pup.dart';
 import 'package:wanted_umbrella/pages/chat/message_screen.dart';
 import 'package:wanted_umbrella/pages/dashboard_main.dart';
 import 'package:wanted_umbrella/pages/on_boarding/choose_personality.dart';
@@ -30,7 +35,12 @@ class Routes {
   //categories
   static const String find_a_mate = '/find_a_mate';
   static const String notification = '/notification';
+  static const String adopt_a_dog = '/adopt_a_dog';
+  static const String maps = '/maps';
   static const String chat_bot = '/chat_bot';
+  static const String gift = '/gift';
+  static const String articles_shows = '/articles_shows';
+  static const String train_pup = '/train_pup';
 
 
 
@@ -58,8 +68,18 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const FindAMate());
       case notification:
         return MaterialPageRoute(builder: (_) => const NotificationPage());
+      case adopt_a_dog:
+        return MaterialPageRoute(builder: (_) => const AdoptADog(), settings: const RouteSettings(name: adopt_a_dog));
+      case maps:
+        return MaterialPageRoute(builder: (_) => const Maps(),settings: const RouteSettings(name: maps));
       case chat_bot:
-        return MaterialPageRoute(builder: (_) => const ChatBot());
+        return MaterialPageRoute(builder: (_) => const ChatBot(),settings: const RouteSettings(name: chat_bot));
+      case gift:
+        return MaterialPageRoute(builder: (_) => const Gift(),settings: const RouteSettings(name: gift));
+      case articles_shows:
+        return MaterialPageRoute(builder: (_) => ArticlesShows(),settings: const RouteSettings(name: articles_shows));
+      case train_pup:
+        return MaterialPageRoute(builder: (_) => TrainPup(),settings: const RouteSettings(name: train_pup));
     }
     return MaterialPageRoute(builder: (_) => Container());
   }
