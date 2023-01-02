@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wanted_umbrella/main.dart';
 import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
 import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
@@ -22,8 +20,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  String email = '';
-  String password = '';
+  String email = 'guna@gmail.com';
+  String password = 'Guna@123';
 
   bool wrongEmail = false;
   bool wrongPassword = false;

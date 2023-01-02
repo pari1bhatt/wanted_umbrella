@@ -42,6 +42,7 @@ class Routes {
   static const String maps = '/maps';
   static const String chat_bot = '/chat_bot';
   static const String gift = '/gift';
+  static const String gift_cart = '/gift_cart';
   static const String articles_shows = '/articles_shows';
   static const String train_pup = '/train_pup';
 
@@ -84,6 +85,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const ChatBot(),settings: const RouteSettings(name: chat_bot));
       case gift:
         return MaterialPageRoute(builder: (_) => const Gift(),settings: const RouteSettings(name: gift));
+      case gift_cart:
+        return MaterialPageRoute(builder: (_) => const GiftCart(),settings: const RouteSettings(name: gift_cart));
       case articles_shows:
         return MaterialPageRoute(builder: (_) => ArticlesShows(),settings: const RouteSettings(name: articles_shows));
       case train_pup:

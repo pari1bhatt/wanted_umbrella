@@ -1,10 +1,12 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Utils {
+  static String? downloadsPath;
+
   static showSnackBar(BuildContext context, String msg, {bool isSuccess = false}) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -59,5 +61,17 @@ class Utils {
               child: const Center(child: CircularProgressIndicator()));
         }
     );
+  }
+
+
+  static setPath() async {
+    Directory _path = await getApplicationDocumentsDirectory();
+    String _localPath = _path.path + Platform.pathSeparator + 'Download';
+    final savedDir = Directory(_localPath);
+    bool hasExisted = await savedDir.exists();
+    if (!hasExisted) {
+      savedDir.create();
+    }
+    downloadsPath = _localPath;
   }
 }

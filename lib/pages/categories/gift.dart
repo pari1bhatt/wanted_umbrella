@@ -1,11 +1,11 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wanted_umbrella/pages/dashboard_provider.dart';
 
 import '../../models/selection_model.dart';
 import '../../routes.dart';
 import '../../utils/constants.dart';
-import '../dashboard_provider.dart';
 
 class Gift extends StatefulWidget {
   const Gift({Key? key}) : super(key: key);
@@ -15,16 +15,29 @@ class Gift extends StatefulWidget {
 }
 
 class _GiftState extends State<Gift> {
-   final List<SelectionModel> items = [
+  late DashboardProvider provider;
+  final List<SelectionModel> items = [
     SelectionModel(text: 'Find a mate', text2: "Rs. 500/-", image: GetImages.flowers_gift),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    provider = Provider.of<DashboardProvider>(context, listen: false);
+    provider.cartItems = [];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Gift your loved ones"),
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.shopping_cart))],
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.pushNamed(context, Routes.gift_cart),
+              icon: const Icon(Icons.shopping_cart))
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -54,7 +67,7 @@ class _GiftState extends State<Gift> {
   gridItem(context, index) {
     return Container(
       color: GetColors.white,
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -101,8 +114,96 @@ class _GiftState extends State<Gift> {
         btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.gift)),
       ).show();
       setState(() {
+        provider.cartItems.add(items[index]);
         items[index].isSelected = true;
       });
     }
+  }
+}
+
+
+
+class GiftCart extends StatelessWidget {
+  const GiftCart({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<DashboardProvider>(builder: (context, bloc, _) {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text("shopping cart"),
+          actions: [
+            IconButton(
+                onPressed: () => Navigator.popUntil(context, ModalRoute.withName(Routes.gift)),
+                icon: const Icon(Icons.add_shopping_cart_rounded, color: GetColors.red))
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: ListView.builder(
+                  itemCount: bloc.cartItems.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [itemList(bloc.cartItems[index]), const Divider(thickness: 1, color: GetColors.black)],
+                    );
+                  }),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: TextButton(
+                style: TextButton.styleFrom(backgroundColor: GetColors.purple),
+                onPressed: bloc.cartItems.isEmpty ? null : () => onBuy(context),
+                child: const Text('Buy', style: TextStyle(fontSize: 20, color: GetColors.white)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text('Total', style: TextStyle(fontSize: 18)),
+                  const SizedBox(width: 20),
+                  Text(bloc.cartItems.isEmpty ? 'Rs. 0/-' : 'Rs. 500/- ',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20)
+          ],
+        ),
+      );
+    });
+  }
+
+  itemList(SelectionModel model) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Column(
+        children: [
+          Container(height: 150, child: Image.asset(model.image ?? GetImages.flowers_gift)),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [Text(model.text!), Text(model.text2!)],
+          )
+        ],
+      ),
+    );
+  }
+
+  onBuy(context) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.scale,
+      dismissOnTouchOutside: false,
+      title: 'Thank you for shopping',
+      desc: 'Your item priced Rs. 500/- will be delivered in 4 working days.',
+      btnCancel: null,
+      btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+    ).show();
   }
 }

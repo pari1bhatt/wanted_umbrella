@@ -10,6 +10,8 @@ import 'package:wanted_umbrella/utils/prefs.dart';
 import 'package:wanted_umbrella/utils/utils.dart';
 
 import '../models/dog_data.dart';
+import '../models/selection_model.dart';
+import '../utils/constants.dart';
 import 'on_boarding/on_boarding_provider.dart';
 
 class DashboardProvider extends ChangeNotifier {
@@ -21,6 +23,9 @@ class DashboardProvider extends ChangeNotifier {
   MatchEngine? matchEngine;
   UserModel? currentUserModel;
 
+  List<SelectionModel> cartItems = [];
+
+
   getExploreData(BuildContext context) async {
     OnBoardingProvider provider = Provider.of<OnBoardingProvider>(context, listen: false);
     currentUserModel = provider.currentUserModel;
@@ -29,6 +34,7 @@ class DashboardProvider extends ChangeNotifier {
       print("value explore: ${value.docs.length}");
       exploreData = [];
       for (var document in value.docs) {
+
         var users = UserModel.fromJson(document.data());
         users.id = document.id;
         exploreData.add(users);
@@ -78,6 +84,7 @@ class DashboardProvider extends ChangeNotifier {
   reset() {
     exploreData = [];
     swipeItems = [];
+    cartItems = [];
     matchEngine = null;
     isExploreLoading = true;
   }
