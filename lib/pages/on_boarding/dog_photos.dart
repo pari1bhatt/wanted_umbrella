@@ -98,7 +98,7 @@ class _DogPhotosState extends State<DogPhotos> {
 
   onNext() {
     if(onBoardingProvider.imageList.isEmpty){
-      Utils.showSnackBar(context, "Please select any one image");
+      Utils.showSnackBar(context, "Please upload at least one dog image");
     } else {
       print("path: ${onBoardingProvider.imageList[0]!.path.split('/').last}");
       Navigator.pushNamed(context, Routes.kci_certificate);

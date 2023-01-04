@@ -60,10 +60,13 @@ class _FindAMateState extends State<FindAMate> {
           children: [
             const Padding(
               padding: EdgeInsets.all(15),
-              child: Text("Smire Test", style: TextStyle(fontSize: 20, color: GetColors.black)),
+              child: Text("Smear Test", style: TextStyle(fontSize: 20, color: GetColors.black)),
             ),
             const Divider(thickness: 1, color: GetColors.black, height: 0),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
+            const Text("Has your dog gone through smear test?",
+                style: TextStyle(fontSize: 16, color: GetColors.black)),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,7 +98,7 @@ class _FindAMateState extends State<FindAMate> {
   ProjectionTest() {
     return Center(
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 12),
+        margin: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(border: Border.all(width: 1)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -104,10 +107,14 @@ class _FindAMateState extends State<FindAMate> {
           children: [
             const Padding(
               padding: EdgeInsets.all(15),
-              child: Text("Projection Test", style: TextStyle(fontSize: 20, color: GetColors.black)),
+              child:
+                  Text("Projection Test", style: TextStyle(fontSize: 20, color: GetColors.black)),
             ),
             const Divider(thickness: 1, color: GetColors.black, height: 0),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
+            const Text("Has your dog gone through projection test?",
+                style: TextStyle(fontSize: 16, color: GetColors.black)),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -172,7 +179,8 @@ class _FindAMateState extends State<FindAMate> {
                           chooseDogGenderValue = newValue;
                         });
                       },
-                      items: <String>['Male', 'Female'].map<DropdownMenuItem<String>>((String value) {
+                      items:
+                          <String>['Male', 'Female'].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -225,7 +233,8 @@ class _FindAMateState extends State<FindAMate> {
             const SizedBox(height: 20),
             TextButton(
               onPressed: onRequest,
-              style: TextButton.styleFrom(backgroundColor: GetColors.purple, padding: EdgeInsets.all(12)),
+              style: TextButton.styleFrom(
+                  backgroundColor: GetColors.purple, padding: EdgeInsets.all(12)),
               child: Text("Request to book", style: TextStyle(color: GetColors.white)),
             ),
           ],
@@ -234,7 +243,7 @@ class _FindAMateState extends State<FindAMate> {
     );
   }
 
-  onRequest(){
+  onRequest() {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.success,

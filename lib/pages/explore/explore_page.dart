@@ -51,7 +51,7 @@ class _ExplorePageState extends State<ExplorePage> {
                       Center(
                         child: SizedBox(
                             height: size.height -
-                                (size.width * .32 + MediaQuery.of(context).padding.top),
+                                (size.width * .35 + MediaQuery.of(context).padding.top),
                             child: swipeCards(provider)),
                       ),
                       likeDislikeButtons()
@@ -118,7 +118,7 @@ class _ExplorePageState extends State<ExplorePage> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  '${bloc.exploreData[index].name}  ',
+                                  '${bloc.exploreData[index].dog_name}  ',
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   softWrap: false,
@@ -226,34 +226,35 @@ class _ExplorePageState extends State<ExplorePage> {
             ),
           ),
         ),
-        // Container(
-        //   decoration: const BoxDecoration(
-        //     color: Colors.white,
-        //     shape: BoxShape.circle,
-        //     boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black, spreadRadius: 2)],
-        //   ),
-        //   child: CircleAvatar(
-        //     radius: 30,
-        //     backgroundColor: Colors.white,
-        //     child: CircleAvatar(
-        //       radius: 28,
-        //       backgroundColor: Colors.deepPurple,
-        //       child: Center(
-        //         child: IconButton(
-        //           icon: const Icon(
-        //             Icons.info_outline,
-        //             color: Colors.white,
-        //             size: 30,
-        //           ),
-        //           onPressed: () {
-        //             _matchEngine.currentItem?.superLike();
-        //           },
-        //           //child: const Text("Superlike"),
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // ),
+        Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black, spreadRadius: 2)],
+          ),
+          child: CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.white,
+            child: CircleAvatar(
+              radius: 28,
+
+              backgroundColor: Colors.deepPurple,
+              child: Center(
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.info,
+                    color: Colors.white,
+                    size: 35,
+                  ),
+                  onPressed: () {
+
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
         Container(
           decoration: const BoxDecoration(
             color: Colors.white,

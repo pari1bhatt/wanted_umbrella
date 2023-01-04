@@ -91,7 +91,7 @@ class _AdoptADogState extends State<AdoptADog> {
         dialogType: DialogType.success,
         animType: AnimType.scale,
         title: 'Thank you',
-        desc: 'Dog adopted successfully!!',
+        desc: 'Dog adopted successfully!!\nplease visit: Wanted umbrella’s Shelter Care Jayanagar, Bangalore.',
         btnCancel: null,
         btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.adopt_a_dog)),
       ).show();

@@ -21,9 +21,9 @@ class RegisterPageState extends State<RegisterPage> {
   bool wrongPassword = false;
   bool obsecurePass = true;
 
-  String nameText = 'Please use a proper name';
-  String emailText = 'Please use a valid email';
-  String passwordText = 'Please choose a better password';
+  String nameText = 'Enter characters only';
+  String emailText = 'Enter valid Email ID';
+  String passwordText = 'Minimum 8 characters, at least one uppercase letter, one number, one special character';
 
   late OnBoardingProvider onBoardingProvider;
 
@@ -121,7 +121,7 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   onNext() async {
-    if (Utils.validateText(onBoardingProvider.userModel.name ?? '')) {
+    if ((onBoardingProvider.userModel.name ?? '').length < 2) {
       setState(() => wrongName = true);
     } else if (Utils.validateEmail(onBoardingProvider.userModel.email ?? '')) {
       setState(() {
@@ -131,6 +131,7 @@ class RegisterPageState extends State<RegisterPage> {
     } else if (Utils.validatePassword(onBoardingProvider.regPassword)) {
       setState(() {
         wrongEmail = false;
+        wrongName = false;
         wrongPassword = true;
       });
     } else {

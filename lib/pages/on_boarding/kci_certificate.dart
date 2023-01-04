@@ -87,7 +87,7 @@ class _KciCertificateState extends State<KciCertificate> {
 
   onNext() async {
     if (onBoardingProvider.selectedFile == null) {
-      Utils.showSnackBar(context, "Please select a document");
+      Utils.showSnackBar(context, "Please upload your KCI certificate");
     } else {
       Navigator.pushNamed(context, Routes.choose_personality);
     }
