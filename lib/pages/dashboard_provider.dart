@@ -9,9 +9,7 @@ import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/prefs.dart';
 import 'package:wanted_umbrella/utils/utils.dart';
 
-import '../models/dog_data.dart';
 import '../models/selection_model.dart';
-import '../utils/constants.dart';
 import 'on_boarding/on_boarding_provider.dart';
 
 class DashboardProvider extends ChangeNotifier {
@@ -25,7 +23,6 @@ class DashboardProvider extends ChangeNotifier {
 
   List<SelectionModel> cartItems = [];
 
-
   getExploreData(BuildContext context) async {
     OnBoardingProvider provider = Provider.of<OnBoardingProvider>(context, listen: false);
     currentUserModel = provider.currentUserModel;
@@ -34,7 +31,6 @@ class DashboardProvider extends ChangeNotifier {
       print("value explore: ${value.docs.length}");
       exploreData = [];
       for (var document in value.docs) {
-
         var users = UserModel.fromJson(document.data());
         users.id = document.id;
         exploreData.add(users);
@@ -43,15 +39,15 @@ class DashboardProvider extends ChangeNotifier {
       swipeItems = [];
       for (int i = 0; i < exploreData.length; i++) {
         swipeItems.add(SwipeItem(
-            content: DogData(text: exploreData[i].name),
+            content: exploreData[i],
             likeAction: () {
-              Utils.showSnackBar(context, "Liked ${exploreData[i].name}");
+              Utils.showSnackBar(context, "Liked ${exploreData[i].dog_name}");
             },
             nopeAction: () {
-              Utils.showSnackBar(context, "Nope ${exploreData[i].name}");
+              Utils.showSnackBar(context, "Nope ${exploreData[i].dog_name}");
             },
             superlikeAction: () {
-              Utils.showSnackBar(context, "Superliked ${exploreData[i].name}");
+              Utils.showSnackBar(context, "Superliked ${exploreData[i].dog_name}");
             },
             onSlideUpdate: (SlideRegion? region) async {
               print("Region $region");
@@ -62,6 +58,18 @@ class DashboardProvider extends ChangeNotifier {
       notifyListeners();
       print("notified");
     });
+  }
+
+  getFilteredData(String? breed, String? gender) async {
+    if(breed != null && gender != null){
+      var value = await FirebaseFirestore.instance
+          .collection("users")
+          .where('breed', isEqualTo: breed)
+          .where('gender', isEqualTo: gender)
+          .get();
+
+      print("value explore: ${value.docs.length}");
+    }
   }
 
   onUpdateProfile(UserModel? model, context) {

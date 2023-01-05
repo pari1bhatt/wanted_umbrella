@@ -100,7 +100,7 @@ class _MultiSelectChipState extends State<MultiSelectChip> {
       selectedColor: GetColors.purple.withOpacity(0.4),
       selected: widget.onBoardingProvider.personalities[widget.index].isSelected,
       onSelected: (selected) {
-        if(!selected || widget.onBoardingProvider.selectedPersonalities() < 3){
+        if(!selected || widget.onBoardingProvider.selectedPersonalities() < 5){
           setState(() {
             widget.onBoardingProvider.personalities[widget.index].isSelected = selected;
           });
@@ -116,6 +116,6 @@ class _MultiSelectChipState extends State<MultiSelectChip> {
         i++;
       }
     }
-    return i < 3;
+    return i < 5;
   }
 }

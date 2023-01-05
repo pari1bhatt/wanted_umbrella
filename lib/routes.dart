@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanted_umbrella/models/user_model.dart';
 import 'package:wanted_umbrella/pages/categories/adopt_a_dog.dart';
 import 'package:wanted_umbrella/pages/categories/articles_shows.dart';
 import 'package:wanted_umbrella/pages/categories/chat_bot.dart';
@@ -9,6 +10,7 @@ import 'package:wanted_umbrella/pages/categories/notification_page.dart';
 import 'package:wanted_umbrella/pages/categories/train_pup.dart';
 import 'package:wanted_umbrella/pages/chat/message_screen.dart';
 import 'package:wanted_umbrella/pages/dashboard_main.dart';
+import 'package:wanted_umbrella/pages/explore/explore_detail_page.dart';
 import 'package:wanted_umbrella/pages/on_boarding/choose_personality.dart';
 import 'package:wanted_umbrella/pages/on_boarding/forgot_password.dart';
 import 'package:wanted_umbrella/pages/on_boarding/kci_certificate.dart';
@@ -33,6 +35,7 @@ class Routes {
 
   //Dashboard
   static const String dashboard = '/dashboard';
+  static const String explore_detail = '/explore_detail';
   static const String messege = '/messege';
 
   //categories
@@ -63,6 +66,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => ForgotPassword());
       case dashboard:
         return MaterialPageRoute(builder: (_) => const Dashboard(),settings: const RouteSettings(name: dashboard));
+      case explore_detail:
+        return MaterialPageRoute(builder: (_) => ExploreDetailsPage(userModel: settings.arguments as UserModel),settings: const RouteSettings(name: explore_detail));
       case dog_detail:
         return MaterialPageRoute(builder: (_) => DogDetail());
       case dog_photos:
@@ -74,7 +79,7 @@ class Routes {
       case messege:
         return MaterialPageRoute(builder: (_) => const MessageScreen());
       case find_a_mate:
-        return MaterialPageRoute(builder: (_) => const FindAMate());
+        return MaterialPageRoute(builder: (_) => const FindAMate(), settings: const RouteSettings(name: find_a_mate));
       case notification:
         return MaterialPageRoute(builder: (_) => const NotificationPage());
       case adopt_a_dog:

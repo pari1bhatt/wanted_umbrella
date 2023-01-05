@@ -1,8 +1,15 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:swipe_cards/draggable_card.dart';
+import 'package:swipe_cards/swipe_cards.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
+import 'package:wanted_umbrella/utils/utils.dart';
 
+import '../../models/user_model.dart';
 import '../../routes.dart';
+import '../dashboard_provider.dart';
 
 class FindAMate extends StatefulWidget {
   const FindAMate({Key? key}) : super(key: key);
@@ -13,9 +20,19 @@ class FindAMate extends StatefulWidget {
 
 class _FindAMateState extends State<FindAMate> {
   late Size size;
+  late DashboardProvider provider;
   int page = 0;
 
+  String? selectedBreed;
   String? chooseDogGenderValue;
+  List<SwipeItem> swipeItems = [];
+  MatchEngine? matchEngine;
+
+  @override
+  void initState() {
+    super.initState();
+    provider = Provider.of<DashboardProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +59,18 @@ class _FindAMateState extends State<FindAMate> {
     }
   }
 
-  onNext() {
-    setState(() {
-      page++;
-    });
+  onNext() async {
+    if (page == 2) {
+      if (selectedBreed?.isEmpty ?? true) {
+        Utils.showSnackBar(context, 'Enter breed');
+      } else if (chooseDogGenderValue?.isEmpty ?? true) {
+        Utils.showSnackBar(context, 'Select gender');
+      } else {
+        onFilter();
+      }
+    } else {
+      setState(() => page++);
+    }
   }
 
   SmireTest() {
@@ -154,13 +179,13 @@ class _FindAMateState extends State<FindAMate> {
           children: [
             Row(
               children: [
-                Expanded(flex: 7, child: Text("Choose your dog breed")),
+                const Expanded(flex: 7, child: Text("Choose your dog breed")),
                 Expanded(
                     flex: 3,
                     child: TextFormField(
                       keyboardType: TextInputType.name,
                       onChanged: (value) {
-                        // onBoardingProvider.regName = value;
+                        selectedBreed = value;
                       },
                       decoration: const InputDecoration(hintText: 'Breed', isDense: true),
                     ))
@@ -203,44 +228,174 @@ class _FindAMateState extends State<FindAMate> {
   request() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              height: size.height * 0.6,
-              child: Card(
-                shadowColor: Colors.deepPurple,
-                elevation: 12,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                color: Colors.black,
-                child: Padding(
-                  padding: const EdgeInsets.all(3),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      GetImages.dog2_1,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
+              height: size.height * 0.65,
+              child: SwipeCards(
+                matchEngine: matchEngine!,
+                itemBuilder: (BuildContext context, int index) {
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: <Widget>[
+                      Card(
+                        margin: const EdgeInsets.all(15),
+                        shadowColor: Colors.deepPurple,
+                        elevation: 12,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(3),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.network(
+                              swipeItems[index].content.dog_images.first ?? 'empty',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.all(20),
+                        decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(24)),
+                            color: Colors.black26),
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          height: 80,
+                          decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(20),
+                                bottomRight: Radius.circular(20),
+                              ),
+                              color: Colors.white24),
+                          margin: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Flexible(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            swipeItems[index].content.dog_name + ' ',
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            softWrap: false,
+                                            style: const TextStyle(
+                                                color: GetColors.white,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            swipeItems[index].content.breed,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            softWrap: false,
+                                            style: const TextStyle(
+                                                color: GetColors.white, fontSize: 15),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Row(
+                                      children: List.generate(
+                                          swipeItems[index].content.personalities?.length ?? 0,
+                                          (i) => Row(
+                                                children: [
+                                                  Chip(
+                                                    padding: EdgeInsets.zero,
+                                                    label: Text(swipeItems[index]
+                                                        .content
+                                                        .personalities![i]),
+                                                  ),
+                                                  const SizedBox(width: 5)
+                                                ],
+                                              )),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+                onStackFinished: () {
+                  Utils.showSnackBar(context, "Stack Finished");
+                },
+                itemChanged: (SwipeItem item, int index) {
+                  // print("item: ${item.content.dog_name}, index: $index");
+                },
+                // upSwipeAllowed: true,
+                fillSpace: true,
               ),
               // Image.network('https://placeimg.com/640/450/any'),
             ),
             const SizedBox(height: 20),
-            TextButton(
-              onPressed: onRequest,
-              style: TextButton.styleFrom(
-                  backgroundColor: GetColors.purple, padding: EdgeInsets.all(12)),
-              child: Text("Request to book", style: TextStyle(color: GetColors.white)),
+            Column(
+              children: [
+                Text("Rs. 3000/-"),
+                TextButton(
+                  onPressed: onRequest,
+                  style: TextButton.styleFrom(
+                      backgroundColor: GetColors.purple, padding: EdgeInsets.all(12)),
+                  child: Text("Request to book", style: TextStyle(color: GetColors.white)),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  onFilter() async {
+    var value = await FirebaseFirestore.instance
+        .collection("users")
+        .where('breed', isEqualTo: selectedBreed)
+        .where('gender', isEqualTo: chooseDogGenderValue)
+        .get();
+    if (value.docs.isNotEmpty) {
+      List<UserModel> userModel = [];
+      swipeItems = [];
+      for (var document in value.docs) {
+        var users = UserModel.fromJson(document.data());
+        users.id = document.id;
+        userModel.add(users);
+        swipeItems.add(SwipeItem(content: users));
+      }
+      matchEngine = MatchEngine(swipeItems: swipeItems);
+      setState(() => page++);
+    } else {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.scale,
+        title: 'Error',
+        desc: 'No matching dog found please go back to Find a mate.',
+        btnCancel: null,
+        btnOkOnPress: () =>
+            Navigator.popUntil(context, ModalRoute.withName(Routes.find_a_mate)),
+      ).show();
+    }
   }
 
   onRequest() {

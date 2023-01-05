@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:wanted_umbrella/pages/dashboard_provider.dart';
+import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 
-import '../../models/dog_data.dart';
 import '../../utils/utils.dart';
 
 class ExplorePage extends StatefulWidget {
@@ -195,7 +194,7 @@ class _ExplorePageState extends State<ExplorePage> {
         });
       },
       itemChanged: (SwipeItem item, int index) {
-        print("item: ${item.content.text}, index: $index");
+        // print("item: ${item.content.dog_name}, index: $index");
       },
       // upSwipeAllowed: true,
       fillSpace: true,
@@ -237,7 +236,6 @@ class _ExplorePageState extends State<ExplorePage> {
             backgroundColor: Colors.white,
             child: CircleAvatar(
               radius: 28,
-
               backgroundColor: Colors.deepPurple,
               child: Center(
                 child: IconButton(
@@ -247,9 +245,8 @@ class _ExplorePageState extends State<ExplorePage> {
                     color: Colors.white,
                     size: 35,
                   ),
-                  onPressed: () {
-
-                  },
+                  onPressed: () => Navigator.pushNamed(context, Routes.explore_detail,
+                      arguments: provider.matchEngine?.currentItem?.content),
                 ),
               ),
             ),
