@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
   static String? downloadsPath;
@@ -61,6 +62,12 @@ class Utils {
               decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
               child: const Center(child: CircularProgressIndicator()));
         });
+  }
+
+  static Future openUrl(String? url) async {
+    if (!await launchUrl(Uri.parse(url ?? ''),mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch $url';
+    }
   }
 
   static setPath() async {

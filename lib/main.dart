@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
 import 'package:wanted_umbrella/pages/dashboard_provider.dart';
 import 'package:wanted_umbrella/pages/on_boarding/on_boarding_provider.dart';
@@ -17,8 +16,6 @@ void main() async {
   await Firebase.initializeApp();
   await Prefs.init();
   await Utils.setPath();
-  // Plugin must be initialized before using
-  await FlutterDownloader.initialize(ignoreSsl: true,debug: true);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );

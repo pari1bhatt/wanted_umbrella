@@ -38,6 +38,13 @@ class GetImages {
   static const String notifications = 'assets/images/notifications.jpg';
   static const String train_your_pup = 'assets/images/train_your_pup.jpg';
 
+  //video thumbnails
+  static const String guide_dogs = 'assets/images/guide_dogs.jpg';
+  static const String train_tricks = 'assets/images/train_tricks.jpg';
+  static const String sit_stay = 'assets/images/sit_stay.jpg';
+  static const String potty_train = 'assets/images/potty_train.jpg';
+  static const String potty_mistakes = 'assets/images/potty_mistakes.jpg';
+
   //events
   static const String event1 = 'assets/images/event1.png';
   static const String event2 = 'assets/images/event2.jpg';
