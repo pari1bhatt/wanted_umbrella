@@ -119,6 +119,7 @@ class OnBoardingProvider extends ChangeNotifier {
 
   addDataToFirebase() async {
     userModel.created = Timestamp.now();
+    userModel.profile_image = userModel.dog_images?.first ?? '';
     try {
       var value = await FirebaseFirestore.instance.collection("users").add(userModel.toJson());
       debugPrint('value.id : ${value.id}');

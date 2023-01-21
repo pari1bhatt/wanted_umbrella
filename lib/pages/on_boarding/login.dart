@@ -21,7 +21,7 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   // String email = 'guna@gmail.com';
-  // String password = 'Guna@123';
+  // String password = 'Guna@1234';
   String email = '';
   String password = '';
 
@@ -31,7 +31,7 @@ class LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
 
-  String emailText = 'Email doesn\'t match';
+  String emailText = 'Enter valid Email ID';
   String passwordText = 'password should be at least 6 letters';
   var presscount = 0;
 

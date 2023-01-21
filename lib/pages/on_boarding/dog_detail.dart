@@ -17,7 +17,6 @@ class _DogDetailState extends State<DogDetail> {
   late OnBoardingProvider onBoardingProvider;
   final _formKey = GlobalKey<FormState>();
 
-
   @override
   void initState() {
     super.initState();
@@ -52,8 +51,8 @@ class _DogDetailState extends State<DogDetail> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text("Details about your dog:",
-                    style:
-                        TextStyle(fontSize: 22, color: GetColors.black, fontWeight: FontWeight.w600)),
+                    style: TextStyle(
+                        fontSize: 22, color: GetColors.black, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 30),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -102,21 +101,31 @@ class _DogDetailState extends State<DogDetail> {
                         child: Text("Choose gender", style: TextStyle(color: GetColors.black))),
                     Expanded(
                       flex: 7,
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: onBoardingProvider.userModel.gender,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            onBoardingProvider.userModel.gender = newValue;
-                          });
-                        },
-                        items:
-                            <String>['Male', 'Female'].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: const ShapeDecoration(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(width: 0.6),
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          ),
+                        ),
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          underline: Container(),
+                          value: onBoardingProvider.userModel.gender,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              onBoardingProvider.userModel.gender = newValue;
+                            });
+                          },
+                          items: <String>['Male', 'Female']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ],
@@ -129,21 +138,31 @@ class _DogDetailState extends State<DogDetail> {
                         child: Text("Choose size", style: TextStyle(color: GetColors.black))),
                     Expanded(
                       flex: 7,
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: onBoardingProvider.userModel.size,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            onBoardingProvider.userModel.size = newValue;
-                          });
-                        },
-                        items: <String>['Small', 'Medium', 'Large', 'Very Large']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: const ShapeDecoration(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(width: 0.6),
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          ),
+                        ),
+                        child: DropdownButton<String>(
+                          underline: Container(),
+                          isExpanded: true,
+                          value: onBoardingProvider.userModel.size,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              onBoardingProvider.userModel.size = newValue;
+                            });
+                          },
+                          items: <String>['Small', 'Medium', 'Large', 'Very Large']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ],
@@ -152,19 +171,52 @@ class _DogDetailState extends State<DogDetail> {
                 Row(
                   children: [
                     const Expanded(
-                        flex: 3, child: Text("Enter age", style: TextStyle(color: GetColors.black))),
+                        flex: 30,
+                        child: Text("Enter age", style: TextStyle(color: GetColors.black))),
                     Expanded(
-                      flex: 7,
+                      flex: 20,
                       child: TextFormField(
                         keyboardType: TextInputType.name,
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z0-9_]"))],
+                        maxLength: 3,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         validator: Utils.validateText,
                         onChanged: (value) {
                           onBoardingProvider.userModel.age = value;
                         },
-                        decoration: const InputDecoration(hintText: 'Age in months', isDense: true),
+                        decoration:
+                            InputDecoration(hintText: 'Age', isDense: true, counter: Container()),
                       ),
                     ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 50,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 0),
+                        decoration: const ShapeDecoration(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(width: 0.6),
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          ),
+                        ),
+                        child: DropdownButton<String>(
+                          underline: Container(),
+                          isExpanded: true,
+                          value: onBoardingProvider.userModel.ageDuration,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              onBoardingProvider.userModel.ageDuration = newValue;
+                            });
+                          },
+                          items: <String>['Months', 'Years']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    )
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -195,7 +247,8 @@ class _DogDetailState extends State<DogDetail> {
                   child: TextButton(
                     style: TextButton.styleFrom(backgroundColor: GetColors.purple),
                     onPressed: onNext,
-                    child: const Text('Next', style: TextStyle(fontSize: 20, color: GetColors.white)),
+                    child:
+                        const Text('Next', style: TextStyle(fontSize: 20, color: GetColors.white)),
                   ),
                 )
               ],
@@ -207,14 +260,14 @@ class _DogDetailState extends State<DogDetail> {
   }
 
   onNext() {
-    if(_formKey.currentState!.validate()){
+    if (_formKey.currentState!.validate()) {
       if (onBoardingProvider.userModel.gender?.isEmpty ?? true) {
         Utils.showSnackBar(context, "Please Select gender");
       } else if (onBoardingProvider.userModel.size?.isEmpty ?? true) {
         Utils.showSnackBar(context, "Please Select size");
       } else if (onBoardingProvider.userModel.age?.isEmpty ?? true) {
         Utils.showSnackBar(context, "Please enter age");
-      }  else {
+      } else {
         Navigator.pushNamed(context, Routes.dog_photos);
       }
     }

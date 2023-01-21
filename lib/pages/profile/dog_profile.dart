@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wanted_umbrella/models/user_model.dart';
 import 'package:wanted_umbrella/pages/dashboard_provider.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
+import 'package:wanted_umbrella/utils/utils.dart';
 
 class DogProfile extends StatefulWidget {
   const DogProfile({Key? key}) : super(key: key);
@@ -16,6 +19,7 @@ class _DogProfileState extends State<DogProfile> {
   late Size size;
   late DashboardProvider provider;
   UserModel? tempModel;
+  File? pickedImage;
 
   @override
   void initState() {
@@ -28,14 +32,7 @@ class _DogProfileState extends State<DogProfile> {
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Edit Profile"),
-        // actions: [
-        //   TextButton(
-        //       onPressed: () {}, child: Text('edit', style: TextStyle(color: GetColors.white)))
-        // ],
-      ),
+      appBar: AppBar(centerTitle: true, title: const Text("Edit Profile")),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -50,17 +47,25 @@ class _DogProfileState extends State<DogProfile> {
                     decoration: BoxDecoration(
                         color: GetColors.blue,
                         borderRadius: BorderRadius.circular(15),
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(
-                              tempModel?.dog_images?.first ?? GetImages.placeholderNetwork),
-                        )),
+                        image: pickedImage != null
+                            ? DecorationImage(
+                                fit: BoxFit.cover,
+                                image: FileImage(pickedImage!),
+                              )
+                            : DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                    tempModel?.profile_image ?? GetImages.placeholderNetwork),
+                              )),
                   ),
                   const Spacer(),
                   InkWell(
-                    onTap: () {},
+                    onTap: () async {
+                      pickedImage = await Utils.pickImage();
+                      setState(() {});
+                    },
                     child: const Text(
-                      "add new photo",
+                      "Replace profile pic",
                       style: TextStyle(
                           color: GetColors.lightBlue,
                           decoration: TextDecoration.underline,
@@ -78,14 +83,15 @@ class _DogProfileState extends State<DogProfile> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text("Dog details :",
-                      style:
-                      TextStyle(fontSize: 22, color: GetColors.black, fontWeight: FontWeight.w600)),
+                      style: TextStyle(
+                          fontSize: 22, color: GetColors.black, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Expanded(
-                          flex: 3, child: Text("Dog name", style: TextStyle(color: GetColors.black))),
+                          flex: 3,
+                          child: Text("Dog name", style: TextStyle(color: GetColors.black))),
                       Expanded(
                         flex: 7,
                         child: TextFormField(
@@ -136,8 +142,8 @@ class _DogProfileState extends State<DogProfile> {
                               tempModel?.gender = newValue;
                             });
                           },
-                          items:
-                          <String>['Male', 'Female'].map<DropdownMenuItem<String>>((String value) {
+                          items: <String>['Male', 'Female']
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -178,18 +184,50 @@ class _DogProfileState extends State<DogProfile> {
                   Row(
                     children: [
                       const Expanded(
-                          flex: 3, child: Text("Enter age", style: TextStyle(color: GetColors.black))),
+                          flex: 30,
+                          child: Text("Enter age", style: TextStyle(color: GetColors.black))),
                       Expanded(
-                        flex: 7,
+                        flex: 20,
                         child: TextFormField(
                           initialValue: tempModel?.age ?? '',
                           keyboardType: TextInputType.name,
                           onChanged: (value) {
                             tempModel?.age = value;
                           },
-                          decoration: const InputDecoration(hintText: 'Age in months', isDense: true),
+                          decoration:
+                              const InputDecoration(hintText: 'Age in months', isDense: true),
                         ),
                       ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 50,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 0),
+                          decoration: const ShapeDecoration(
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(width: 0.6),
+                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            ),
+                          ),
+                          child: DropdownButton<String>(
+                            underline: Container(),
+                            isExpanded: true,
+                            value: tempModel?.ageDuration,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                tempModel?.ageDuration = newValue;
+                              });
+                            },
+                            items: <String>['Months', 'Years']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      )
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -222,9 +260,7 @@ class _DogProfileState extends State<DogProfile> {
             Center(
               child: TextButton(
                 style: TextButton.styleFrom(backgroundColor: GetColors.purple),
-                onPressed: () {
-                  provider.onUpdateProfile(tempModel!,context);
-                },
+                onPressed: onSave,
                 child: const Text('Save', style: TextStyle(fontSize: 20, color: GetColors.white)),
               ),
             ),
@@ -233,5 +269,12 @@ class _DogProfileState extends State<DogProfile> {
         ),
       ),
     );
+  }
+
+  onSave() async{
+    if(pickedImage != null){
+      tempModel!.profile_image = await provider.uploadImageToFirebase(pickedImage);
+    }
+    provider.onUpdateProfile(tempModel!, context);
   }
 }

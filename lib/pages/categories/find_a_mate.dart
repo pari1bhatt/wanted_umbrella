@@ -76,7 +76,7 @@ class _FindAMateState extends State<FindAMate> {
   SmireTest() {
     return Center(
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 12),
+        margin: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(border: Border.all(width: 1)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -102,16 +102,17 @@ class _FindAMateState extends State<FindAMate> {
                   child: const Text("Yes", style: TextStyle(color: GetColors.white)),
                 ),
                 TextButton(
-                  onPressed: onNext,
+                  onPressed: () =>
+                      Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
                   style: TextButton.styleFrom(backgroundColor: GetColors.purple),
-                  child: Text("No", style: TextStyle(color: GetColors.white)),
+                  child: const Text("No", style: TextStyle(color: GetColors.white)),
                 )
               ],
             ),
             TextButton(
               onPressed: onNext,
               style: TextButton.styleFrom(backgroundColor: GetColors.grey),
-              child: Text("Not Required", style: TextStyle(color: GetColors.white)),
+              child: const Text("Not Required", style: TextStyle(color: GetColors.white)),
             ),
             const SizedBox(height: 10),
           ],
@@ -150,16 +151,17 @@ class _FindAMateState extends State<FindAMate> {
                   child: const Text("Yes", style: TextStyle(color: GetColors.white)),
                 ),
                 TextButton(
-                  onPressed: onNext,
+                  onPressed: () =>
+                      Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
                   style: TextButton.styleFrom(backgroundColor: GetColors.purple),
-                  child: Text("No", style: TextStyle(color: GetColors.white)),
+                  child: const Text("No", style: TextStyle(color: GetColors.white)),
                 )
               ],
             ),
             TextButton(
               onPressed: onNext,
               style: TextButton.styleFrom(backgroundColor: GetColors.grey),
-              child: Text("Not Required", style: TextStyle(color: GetColors.white)),
+              child: const Text("Not Required", style: const TextStyle(color: GetColors.white)),
             ),
             const SizedBox(height: 10),
           ],
@@ -193,7 +195,7 @@ class _FindAMateState extends State<FindAMate> {
             ),
             Row(
               children: [
-                Expanded(flex: 7, child: Text("Choose the gender preference")),
+                const Expanded(flex: 7, child: const Text("Choose the gender preference")),
                 Expanded(
                     flex: 3,
                     child: DropdownButton<String>(
@@ -217,7 +219,7 @@ class _FindAMateState extends State<FindAMate> {
             TextButton(
               onPressed: onNext,
               style: TextButton.styleFrom(backgroundColor: GetColors.purple),
-              child: Text("Continue", style: TextStyle(color: GetColors.white)),
+              child: const Text("Continue", style: const TextStyle(color: GetColors.white)),
             )
           ],
         ),
@@ -352,12 +354,12 @@ class _FindAMateState extends State<FindAMate> {
             const SizedBox(height: 20),
             Column(
               children: [
-                Text("Rs. 3000/-"),
+                const Text("Rs. 3000/-"),
                 TextButton(
                   onPressed: onRequest,
                   style: TextButton.styleFrom(
-                      backgroundColor: GetColors.purple, padding: EdgeInsets.all(12)),
-                  child: Text("Request to book", style: TextStyle(color: GetColors.white)),
+                      backgroundColor: GetColors.purple, padding: const EdgeInsets.all(12)),
+                  child: const Text("Request to book", style: TextStyle(color: GetColors.white)),
                 ),
               ],
             ),
@@ -392,8 +394,7 @@ class _FindAMateState extends State<FindAMate> {
         title: 'Error',
         desc: 'No matching dog found please go back to Find a mate.',
         btnCancel: null,
-        btnOkOnPress: () =>
-            Navigator.popUntil(context, ModalRoute.withName(Routes.find_a_mate)),
+        btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.find_a_mate)),
       ).show();
     }
   }

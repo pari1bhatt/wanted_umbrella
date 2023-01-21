@@ -19,12 +19,14 @@ class _AdoptionState extends State<Adoption> {
   late Size size;
   late DashboardProvider provider;
   UserModel? tempModel;
+  bool showAdoption = false;
 
   @override
   void initState() {
     super.initState();
     provider = Provider.of<DashboardProvider>(context, listen: false);
     tempModel = provider.currentUserModel;
+    showAdoption = tempModel?.showAdoption ?? false;
   }
 
   @override
@@ -33,7 +35,7 @@ class _AdoptionState extends State<Adoption> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Put your dog on adoption"),
+        title: const Text("Put your dog on adoption"),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -59,7 +61,7 @@ class _AdoptionState extends State<Adoption> {
                   InkWell(
                     onTap: () {},
                     child: const Text(
-                      "add photo",
+                      "Profile pic",
                       style: TextStyle(
                           color: GetColors.lightBlue,
                           decoration: TextDecoration.underline,
@@ -76,15 +78,16 @@ class _AdoptionState extends State<Adoption> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text("Dog details :",
-                      style:
-                      TextStyle(fontSize: 22, color: GetColors.black, fontWeight: FontWeight.w600)),
+                  const Text("Your dog details :",
+                      style: TextStyle(
+                          fontSize: 22, color: GetColors.black, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Expanded(
-                          flex: 3, child: Text("Dog name", style: TextStyle(color: GetColors.black))),
+                          flex: 3,
+                          child: Text("Dog name", style: TextStyle(color: GetColors.black))),
                       Expanded(
                         flex: 7,
                         child: TextFormField(
@@ -104,8 +107,7 @@ class _AdoptionState extends State<Adoption> {
                   Row(
                     children: [
                       const Expanded(
-                          flex: 3,
-                          child: Text("Enter breed", style: TextStyle(color: GetColors.black))),
+                          flex: 3, child: Text("Breed", style: TextStyle(color: GetColors.black))),
                       Expanded(
                         flex: 7,
                         child: TextFormField(
@@ -125,20 +127,16 @@ class _AdoptionState extends State<Adoption> {
                   Row(
                     children: [
                       const Expanded(
-                          flex: 3,
-                          child: Text("Choose gender", style: TextStyle(color: GetColors.black))),
+                          flex: 3, child: Text("Gender", style: TextStyle(color: GetColors.black))),
                       Expanded(
                         flex: 7,
                         child: DropdownButton<String>(
                           isExpanded: true,
                           value: tempModel?.gender,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              tempModel?.gender = newValue;
-                            });
-                          },
-                          items:
-                          <String>['Male', 'Female'].map<DropdownMenuItem<String>>((String value) {
+                          onTap: () {},
+                          onChanged: (String? newValue) {},
+                          items: <String>['Male', 'Female']
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -152,9 +150,9 @@ class _AdoptionState extends State<Adoption> {
                   Row(
                     children: [
                       const Expanded(
-                          flex: 3, child: Text("Enter age", style: TextStyle(color: GetColors.black))),
+                          flex: 30, child: Text("Age", style: TextStyle(color: GetColors.black))),
                       Expanded(
-                        flex: 7,
+                        flex: 20,
                         child: TextFormField(
                           readOnly: true,
                           initialValue: tempModel?.age ?? '',
@@ -162,9 +160,36 @@ class _AdoptionState extends State<Adoption> {
                           onChanged: (value) {
                             tempModel?.age = value;
                           },
-                          decoration: const InputDecoration(hintText: 'Age in months', isDense: true),
+                          decoration:
+                              const InputDecoration(hintText: 'Age in months', isDense: true),
                         ),
                       ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 50,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 0),
+                          decoration: const ShapeDecoration(
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(width: 0.6),
+                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            ),
+                          ),
+                          child: DropdownButton<String>(
+                            underline: Container(),
+                            isExpanded: true,
+                            value: tempModel?.ageDuration,
+                            onChanged: (String? newValue) {},
+                            items: <String>['Months', 'Years']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      )
                     ],
                   )
                 ],
@@ -173,9 +198,11 @@ class _AdoptionState extends State<Adoption> {
             const SizedBox(height: 20),
             Center(
               child: TextButton(
-                style: TextButton.styleFrom(backgroundColor: GetColors.purple),
-                onPressed: onSave,
-                child: const Text('Save', style: TextStyle(fontSize: 20, color: GetColors.white)),
+                style: TextButton.styleFrom(
+                    backgroundColor: showAdoption ? GetColors.grey : GetColors.purple),
+                onPressed: showAdoption ? null : onSave,
+                child: Text(showAdoption ? 'Available for adoption' : 'Save',
+                    style: const TextStyle(fontSize: 20, color: GetColors.white)),
               ),
             ),
             const SizedBox(height: 15),
@@ -185,16 +212,8 @@ class _AdoptionState extends State<Adoption> {
     );
   }
 
-  onSave(){
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.success,
-      animType: AnimType.scale,
-      dismissOnTouchOutside: false,
-      title: 'Success',
-      desc: 'Now your dog is open for adoption',
-      btnCancel: null,
-      btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
-    ).show();
+  onSave() {
+    tempModel?.showAdoption = true;
+    provider.onUpdateProfile(tempModel!, context,msg: 'Now your dog is open for adoption');
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../models/selection_model.dart';
 import '../../utils/constants.dart';
 
 class Vaccination extends StatefulWidget {
@@ -11,87 +12,59 @@ class Vaccination extends StatefulWidget {
 }
 
 class _VaccinationState extends State<Vaccination> {
-  String dateinput = '00/00/0000';
+  List<SelectionModel> list = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Vaccination"),
+        title: const Text("Vaccination"),
         actions: [
           TextButton(
-              onPressed: () {}, child: Text('Add', style: TextStyle(color: GetColors.white)))
+            onPressed: onDatePicker,
+            child: const Text('Add', style: TextStyle(color: GetColors.white)),
+          )
         ],
       ),
-      body: Column(
-        children: [
-          ListTile(
-            leading: Text('1. Vaccination 1'),
-            title: InkWell(
-              onTap: onDatePicker,
-              child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  border: Border.all(width: 1)
+      body: ListView.builder(
+          itemCount: list.length,
+          itemBuilder: (context, index) {
+            String currentEntry = (index + 1).toString();
+            return Column(
+              children: [
+                ListTile(
+                  leading: Text('$currentEntry. Vaccination $currentEntry'),
+                  title: InkWell(
+                    onTap: onDatePicker,
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(border: Border.all(width: 1)),
+                      child: Center(
+                          child: Text(list[index].text ?? '00/00/0000',
+                              style: const TextStyle(color: GetColors.grey))),
+                    ),
+                  ),
                 ),
-                child: Center(child: Text(dateinput,style: TextStyle(color: GetColors.grey))),
-              ),
-            ),
-            trailing: Icon(Icons.radio_button_off),
-          ),
-          getDivider(),
-          ListTile(
-            leading: Text('2. Vaccination 2'),
-            title: InkWell(
-              onTap: onDatePicker,
-              child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    border: Border.all(width: 1)
-                ),
-                child: Center(child: Text(dateinput,style: TextStyle(color: GetColors.grey))),
-              ),
-            ),
-            trailing: Icon(Icons.radio_button_off),
-          ),
-          getDivider(),
-          ListTile(
-            leading: Text('3. Vaccination 3'),
-            title: InkWell(
-              onTap: onDatePicker,
-              child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    border: Border.all(width: 1)
-                ),
-                child: Center(child: Text(dateinput,style: TextStyle(color: GetColors.grey))),
-              ),
-            ),
-            trailing: Icon(Icons.radio_button_off),
-          ),
-          getDivider(),
-        ],
-      ),
+                getDivider()
+              ],
+            );
+          }),
     );
   }
 
   onDatePicker() async {
     DateTime? pickedDate = await showDatePicker(
-        context: context, initialDate: DateTime.now(),
+        context: context,
+        initialDate: DateTime.now(),
         firstDate: DateTime(2000),
-        lastDate: DateTime(2101)
-    );
-    if(pickedDate != null ){
-      print(pickedDate);  //pickedDate output format => 2021-03-10 00:00:00.000
-      String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
-      print(formattedDate); //formatted date output using intl package =>  2021-03-16
-      //you can implement different kind of Date Format here according to your requirement
-
+        lastDate: DateTime(2101));
+    if (pickedDate != null) {
+      String formattedDate = DateFormat('dd-MMM-yyyy').format(pickedDate);
       setState(() {
-        dateinput = formattedDate; //set output date to TextField value.
+        list.add(SelectionModel(text: formattedDate)); //set output date to TextField value.
       });
-    }else{
+    } else {
       print("Date is not selected");
     }
   }
@@ -99,5 +72,4 @@ class _VaccinationState extends State<Vaccination> {
   getDivider() {
     return const Divider(thickness: 1, color: GetColors.black87, height: 10);
   }
-
 }

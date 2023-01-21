@@ -30,7 +30,6 @@ class Utils {
   static validatePassword(String text) {
     bool passValid =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$').hasMatch(text);
-    print("valid: ${passValid}");
     return !passValid;
   }
 

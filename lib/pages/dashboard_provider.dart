@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:swipe_cards/draggable_card.dart';
@@ -72,7 +75,19 @@ class DashboardProvider extends ChangeNotifier {
     }
   }
 
-  onUpdateProfile(UserModel? model, context) {
+  uploadImageToFirebase(File? file) async {
+    String fileName = file!.path.split('/').last;
+    try {
+      Reference reference =
+      FirebaseStorage.instance.ref().child('${currentUserModel?.email}/photos/$fileName');
+      await reference.putFile(file);
+      return await reference.getDownloadURL();
+    } catch (e) {
+    print('error occured');
+    }
+  }
+
+  onUpdateProfile(UserModel? model, context,{String msg = 'Dog details updated'}) {
     userCol.doc(model!.id).update(model.toJson()).then((value) {
       AwesomeDialog(
         context: context,
@@ -80,11 +95,12 @@ class DashboardProvider extends ChangeNotifier {
         animType: AnimType.scale,
         dismissOnTouchOutside: false,
         title: 'Success',
-        desc: 'Dog details updated',
+        desc: msg,
         btnCancel: null,
         btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
       ).show();
       currentUserModel = UserModel.fromJson(model.toJson());
+      currentUserModel?.id = model.id;
       notifyListeners();
     });
   }
