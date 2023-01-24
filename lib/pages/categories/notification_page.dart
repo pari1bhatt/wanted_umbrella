@@ -1,8 +1,12 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wanted_umbrella/models/user_model.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 
 import '../../models/selection_model.dart';
+import '../dashboard_provider.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -17,6 +21,13 @@ class _NotificationPageState extends State<NotificationPage> {
     SelectionModel(text: 'Joker - Bulldog')
   ];
   late Size size;
+  late DashboardProvider provider;
+
+  @override
+  void initState() {
+    super.initState();
+    provider = Provider.of<DashboardProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +37,31 @@ class _NotificationPageState extends State<NotificationPage> {
         centerTitle: true,
         title: Text("Notifications"),
       ),
-      body: ListView.builder(
-        padding: EdgeInsets.symmetric(vertical: 10),
-        itemCount: 2,
-        itemBuilder: (context, index) {
-          return listItem(index);
-        },
-      ),
+      body: StreamBuilder<DocumentSnapshot>(
+          stream:
+              FirebaseFirestore.instance.doc("users/${provider.currentUserModel?.id}").snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasData) {
+              UserModel userModel = UserModel.fromJson(snapshot.data?.data() as Map);
+              print('userModel ${userModel.breedingRequests.length}');
+
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                itemCount: userModel.breedingRequests.length,
+                itemBuilder: (context, index) {
+                  return listItem(userModel);
+                },
+              );
+            }
+            return const Center(child: Text("No notifications"));
+          }),
     );
   }
 
-  listItem(index) {
+  listItem(UserModel userModel) {
     return Column(
       children: [
         Container(
@@ -46,15 +71,18 @@ class _NotificationPageState extends State<NotificationPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Text("${items[index].text}\nhas requested for a match")),
+              Expanded(
+                  child: Text("${userModel.name} - ${userModel.breed}\nhas requested for a match")),
               Align(
                   alignment: Alignment.bottomRight,
                   child: TextButton(
-                    onPressed: items[index].isSelected ? null : () => successDialog(index),
+                    // onPressed: userModel.isSelected ? null : () => successDialog(userModel),
+                    onPressed: () => successDialog(userModel),
                     style: TextButton.styleFrom(
-                        backgroundColor:
-                            items[index].isSelected ? GetColors.grey : GetColors.purple),
-                    child: Text(items[index].isSelected ? 'Accepted' : "Accept",
+                      // backgroundColor: userModel.isSelected ? GetColors.grey : GetColors.purple,
+                      backgroundColor: GetColors.purple,
+                    ),
+                    child: const Text("Accept",
                         style: TextStyle(color: GetColors.white)),
                   )),
             ],
@@ -65,11 +93,11 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
-  successDialog(index) {
-    if (!items[index].isSelected) {
-      setState(() {
-        items[index].isSelected = true;
-      });
+  successDialog(UserModel userModel) {
+    // if (!userModel.isSelected) {
+      // setState(() {
+      //   userModel.isSelected = true;
+      // });
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,
@@ -80,6 +108,6 @@ class _NotificationPageState extends State<NotificationPage> {
         btnCancel: null,
         btnOkOnPress: () {},
       ).show();
-    }
+    // }
   }
 }

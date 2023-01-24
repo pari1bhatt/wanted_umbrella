@@ -7,6 +7,7 @@ class UserModel {
   String? bio;
   String? breed;
   Timestamp? created;
+  List<DocumentReference> breedingRequests = [];
   List<String>? dog_images = [];
   String? profile_image;
   String? dog_name;
@@ -26,6 +27,7 @@ class UserModel {
       this.bio,
       this.breed,
       this.created,
+      this.breedingRequests = const [],
       this.dog_images,
       this.profile_image,
       this.dog_name,
@@ -38,13 +40,18 @@ class UserModel {
       this.personalities,
       this.size});
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  factory UserModel.fromJson(Map<dynamic, dynamic> json) {
     return UserModel(
       age: json['age'],
       ageDuration: json['ageDuration'] ?? 'Years',
       bio: json['bio'],
       breed: json['breed'],
       created: json['created'],
+      breedingRequests: json['breedingRequests'] != null
+          ? (json['breedingRequests'] is DocumentReference)
+              ? []
+              : (List<DocumentReference>.from(json['breedingRequests']))
+          : [],
       dog_images: json['dog_images'] != null ? List<String>.from(json['dog_images']) : null,
       dog_name: json['dog_name'],
       profile_image: json['profile_image'],
@@ -54,7 +61,8 @@ class UserModel {
       showAdoption: json['showAdoption'] ?? false,
       kci_certificate: json['kci_certificate'],
       name: json['name'],
-     personalities: json['personalities'] != null ? List<String>.from(json['personalities']) : null,
+      personalities:
+          json['personalities'] != null ? List<String>.from(json['personalities']) : null,
       size: json['size'],
     );
   }
@@ -75,6 +83,7 @@ class UserModel {
     data['kci_certificate'] = kci_certificate;
     data['name'] = name;
     data['size'] = size;
+    data['breedingRequests'] = breedingRequests;
     if (personalities != null) {
       data['personalities'] = personalities;
     }

@@ -2,7 +2,6 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 import 'package:wanted_umbrella/utils/utils.dart';
@@ -23,10 +22,13 @@ class _FindAMateState extends State<FindAMate> {
   late DashboardProvider provider;
   int page = 0;
 
+  // String? selectedBreed = 'pug';
+  // String? chooseDogGenderValue = 'Female';
   String? selectedBreed;
   String? chooseDogGenderValue;
   List<SwipeItem> swipeItems = [];
   MatchEngine? matchEngine;
+  UserModel? currentUserModel;
 
   @override
   void initState() {
@@ -55,7 +57,7 @@ class _FindAMateState extends State<FindAMate> {
       case 2:
         return chooseDog();
       case 3:
-        return request();
+        return requestWidget();
     }
   }
 
@@ -227,7 +229,7 @@ class _FindAMateState extends State<FindAMate> {
     );
   }
 
-  request() {
+  requestWidget() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
@@ -344,6 +346,7 @@ class _FindAMateState extends State<FindAMate> {
                   Utils.showSnackBar(context, "Stack Finished");
                 },
                 itemChanged: (SwipeItem item, int index) {
+                  currentUserModel = item.content;
                   // print("item: ${item.content.dog_name}, index: $index");
                 },
                 // upSwipeAllowed: true,
@@ -356,7 +359,7 @@ class _FindAMateState extends State<FindAMate> {
               children: [
                 const Text("Rs. 3000/-"),
                 TextButton(
-                  onPressed: onRequest,
+                  onPressed: () => provider.sendBookRequest(currentUserModel,context),
                   style: TextButton.styleFrom(
                       backgroundColor: GetColors.purple, padding: const EdgeInsets.all(12)),
                   child: const Text("Request to book", style: TextStyle(color: GetColors.white)),
@@ -384,6 +387,7 @@ class _FindAMateState extends State<FindAMate> {
         userModel.add(users);
         swipeItems.add(SwipeItem(content: users));
       }
+      currentUserModel = swipeItems[0].content;
       matchEngine = MatchEngine(swipeItems: swipeItems);
       setState(() => page++);
     } else {
@@ -397,18 +401,5 @@ class _FindAMateState extends State<FindAMate> {
         btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.find_a_mate)),
       ).show();
     }
-  }
-
-  onRequest() {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.success,
-      animType: AnimType.scale,
-      dismissOnTouchOutside: false,
-      title: 'Success',
-      desc: 'Breeding request sent!',
-      btnCancel: null,
-      btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
-    ).show();
   }
 }

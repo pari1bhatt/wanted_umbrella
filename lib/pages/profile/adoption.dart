@@ -54,7 +54,7 @@ class _AdoptionState extends State<Adoption> {
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: NetworkImage(
-                              tempModel?.dog_images?.first ?? GetImages.placeholderNetwork),
+                              tempModel?.profile_image ?? GetImages.placeholderNetwork),
                         )),
                   ),
                   const Spacer(),

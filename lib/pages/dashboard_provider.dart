@@ -64,7 +64,7 @@ class DashboardProvider extends ChangeNotifier {
   }
 
   getFilteredData(String? breed, String? gender) async {
-    if(breed != null && gender != null){
+    if (breed != null && gender != null) {
       var value = await FirebaseFirestore.instance
           .collection("users")
           .where('breed', isEqualTo: breed)
@@ -79,15 +79,15 @@ class DashboardProvider extends ChangeNotifier {
     String fileName = file!.path.split('/').last;
     try {
       Reference reference =
-      FirebaseStorage.instance.ref().child('${currentUserModel?.email}/photos/$fileName');
+          FirebaseStorage.instance.ref().child('${currentUserModel?.email}/photos/$fileName');
       await reference.putFile(file);
       return await reference.getDownloadURL();
     } catch (e) {
-    print('error occured');
+      print('error occured');
     }
   }
 
-  onUpdateProfile(UserModel? model, context,{String msg = 'Dog details updated'}) {
+  onUpdateProfile(UserModel? model, context, {String msg = 'Dog details updated'}) {
     userCol.doc(model!.id).update(model.toJson()).then((value) {
       AwesomeDialog(
         context: context,
@@ -103,6 +103,54 @@ class DashboardProvider extends ChangeNotifier {
       currentUserModel?.id = model.id;
       notifyListeners();
     });
+  }
+
+  sendBookRequest(UserModel? model, context) async {
+    print("check ID: ${model?.id}");
+
+    if(model?.id != null){
+      DocumentReference? doc = FirebaseFirestore.instance.doc("users/${model?.id}");
+
+      for(DocumentReference data in model?.breedingRequests ?? []){
+        if(data.id == currentUserModel?.id){
+          print("check both: ${data.id}");
+          print("check both: ${currentUserModel?.id}");
+          print("duplicate");
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.info,
+            animType: AnimType.scale,
+            dismissOnTouchOutside: false,
+            title: 'Note',
+            desc: 'Request already sent to this user!',
+            btnCancel: null,
+            btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.find_a_mate)),
+          ).show();
+          return;
+        }
+      }
+
+
+      model?.breedingRequests.add(FirebaseFirestore.instance.doc('users/${currentUserModel?.id}'));
+      print('check data: ${model?.breedingRequests.length}');
+      await doc.update(model!.toJson());
+      print("updated");
+
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.scale,
+        dismissOnTouchOutside: false,
+        title: 'Success',
+        desc: 'Breeding request sent!',
+        btnCancel: null,
+        btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+      ).show();
+    }
+    else {
+      debugPrint('id not found');
+    }
+
   }
 
   reset() {
