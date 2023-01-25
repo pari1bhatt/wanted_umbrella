@@ -156,7 +156,7 @@ class GiftCart extends StatelessWidget {
               child: TextButton(
                 style: TextButton.styleFrom(backgroundColor: GetColors.purple),
                 onPressed: bloc.cartItems.isEmpty ? null : () => onBuy(context),
-                child: const Text('Buy', style: TextStyle(fontSize: 20, color: GetColors.white)),
+                child: const Text('Go to Payment', style: TextStyle(fontSize: 20, color: GetColors.white)),
               ),
             ),
             Padding(
@@ -195,15 +195,17 @@ class GiftCart extends StatelessWidget {
   }
 
   onBuy(context) {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.success,
-      animType: AnimType.scale,
-      dismissOnTouchOutside: false,
-      title: 'Thank you for shopping',
-      desc: 'Your item priced Rs. 500/- will be delivered in 4 working days.',
-      btnCancel: null,
-      btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
-    ).show();
+    Navigator.pushNamed(context, Routes.gift_payment);
+
+    // AwesomeDialog(
+    //   context: context,
+    //   dialogType: DialogType.success,
+    //   animType: AnimType.scale,
+    //   dismissOnTouchOutside: false,
+    //   title: 'Thank you for shopping',
+    //   desc: 'Your item priced Rs. 500/- will be delivered in 4 working days.',
+    //   btnCancel: null,
+    //   btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+    // ).show();
   }
 }

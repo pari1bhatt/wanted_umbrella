@@ -5,6 +5,7 @@ import 'package:wanted_umbrella/pages/categories/articles_shows.dart';
 import 'package:wanted_umbrella/pages/categories/chat_bot.dart';
 import 'package:wanted_umbrella/pages/categories/find_a_mate.dart';
 import 'package:wanted_umbrella/pages/categories/gift.dart';
+import 'package:wanted_umbrella/pages/categories/gift_payment.dart';
 import 'package:wanted_umbrella/pages/categories/maps.dart';
 import 'package:wanted_umbrella/pages/categories/notification_page.dart';
 import 'package:wanted_umbrella/pages/categories/train_pup.dart';
@@ -45,6 +46,7 @@ class Routes {
   static const String maps = '/maps';
   static const String chat_bot = '/chat_bot';
   static const String gift = '/gift';
+  static const String gift_payment = '/gift_payment';
   static const String gift_cart = '/gift_cart';
   static const String articles_shows = '/articles_shows';
   static const String train_pup = '/train_pup';
@@ -90,6 +92,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const ChatBot(),settings: const RouteSettings(name: chat_bot));
       case gift:
         return MaterialPageRoute(builder: (_) => const Gift(),settings: const RouteSettings(name: gift));
+      case gift_payment:
+        return MaterialPageRoute(builder: (_) => const GIftPayment(),settings: const RouteSettings(name: gift_payment));
       case gift_cart:
         return MaterialPageRoute(builder: (_) => const GiftCart(),settings: const RouteSettings(name: gift_cart));
       case articles_shows:
