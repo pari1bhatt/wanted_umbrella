@@ -8,6 +8,7 @@ import 'package:wanted_umbrella/utils/utils.dart';
 
 import '../../models/user_model.dart';
 import '../../routes.dart';
+import '../../utils/prefs.dart';
 import '../dashboard_provider.dart';
 
 class FindAMate extends StatefulWidget {
@@ -28,7 +29,7 @@ class _FindAMateState extends State<FindAMate> {
   String? chooseDogGenderValue;
   List<SwipeItem> swipeItems = [];
   MatchEngine? matchEngine;
-  UserModel? currentUserModel;
+  UserModel? visibleUserModel;
 
   @override
   void initState() {
@@ -281,60 +282,60 @@ class _FindAMateState extends State<FindAMate> {
                               ),
                               color: Colors.white24),
                           margin: const EdgeInsets.fromLTRB(24, 40, 24, 24),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4),
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            swipeItems[index].content.dog_name + ' ',
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                            softWrap: false,
-                                            style: const TextStyle(
-                                                color: GetColors.white,
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            swipeItems[index].content.breed,
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                            softWrap: false,
-                                            style: const TextStyle(
-                                                color: GetColors.white, fontSize: 15),
-                                          )
-                                        ],
+                              Flexible(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        swipeItems[index].content.dog_name + ' ',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: false,
+                                        style: const TextStyle(
+                                            color: GetColors.white,
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold),
                                       ),
-                                    ),
+                                      Text(
+                                        swipeItems[index].content.breed,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: false,
+                                        style: const TextStyle(
+                                            color: GetColors.white, fontSize: 15),
+                                      ),
+                                      Spacer(),
+                                      Icon(
+                                        swipeItems[index].content.gender == 'Male' ? Icons.male : Icons.female,
+                                        color: Colors.white,
+                                        size: 26,
+                                      )
+                                    ],
                                   ),
-                                  Flexible(
-                                    child: Row(
-                                      children: List.generate(
-                                          swipeItems[index].content.personalities?.length ?? 0,
-                                          (i) => Row(
-                                                children: [
-                                                  Chip(
-                                                    padding: EdgeInsets.zero,
-                                                    label: Text(swipeItems[index]
-                                                        .content
-                                                        .personalities![i]),
-                                                  ),
-                                                  const SizedBox(width: 5)
-                                                ],
-                                              )),
-                                    ),
-                                  )
-                                ],
+                                ),
                               ),
+                              Flexible(
+                                child: Row(
+                                  children: List.generate(
+                                      swipeItems[index].content.personalities?.length ?? 0,
+                                      (i) => Row(
+                                            children: [
+                                              Chip(
+                                                padding: EdgeInsets.zero,
+                                                label: Text(swipeItems[index]
+                                                    .content
+                                                    .personalities![i]),
+                                              ),
+                                              const SizedBox(width: 5)
+                                            ],
+                                          )),
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -346,7 +347,7 @@ class _FindAMateState extends State<FindAMate> {
                   Utils.showSnackBar(context, "Stack Finished");
                 },
                 itemChanged: (SwipeItem item, int index) {
-                  currentUserModel = item.content;
+                  visibleUserModel = item.content;
                   // print("item: ${item.content.dog_name}, index: $index");
                 },
                 // upSwipeAllowed: true,
@@ -359,7 +360,7 @@ class _FindAMateState extends State<FindAMate> {
               children: [
                 const Text("Rs. 3000/-"),
                 TextButton(
-                  onPressed: () => provider.sendBookRequest(currentUserModel,context),
+                  onPressed: onRequest,
                   style: TextButton.styleFrom(
                       backgroundColor: GetColors.purple, padding: const EdgeInsets.all(12)),
                   child: const Text("Request to book", style: TextStyle(color: GetColors.white)),
@@ -372,11 +373,19 @@ class _FindAMateState extends State<FindAMate> {
     );
   }
 
+  onRequest(){
+    if(visibleUserModel?.gender == 'Female'){
+      provider.sendBookRequest(visibleUserModel,context);
+    } else
+    Navigator.pushNamed(context, Routes.gift_payment, arguments: visibleUserModel);
+  }
+
   onFilter() async {
     var value = await FirebaseFirestore.instance
         .collection("users")
         .where('breed', isEqualTo: selectedBreed)
         .where('gender', isEqualTo: chooseDogGenderValue)
+        .where('email', isNotEqualTo: Prefs.getUserEmail())
         .get();
     if (value.docs.isNotEmpty) {
       List<UserModel> userModel = [];
@@ -387,7 +396,7 @@ class _FindAMateState extends State<FindAMate> {
         userModel.add(users);
         swipeItems.add(SwipeItem(content: users));
       }
-      currentUserModel = swipeItems[0].content;
+      visibleUserModel = swipeItems[0].content;
       matchEngine = MatchEngine(swipeItems: swipeItems);
       setState(() => page++);
     } else {

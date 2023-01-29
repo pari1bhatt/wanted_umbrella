@@ -16,10 +16,6 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-  final List<SelectionModel> items = [
-    SelectionModel(text: 'Bunty - Husky'),
-    SelectionModel(text: 'Joker - Bulldog')
-  ];
   late Size size;
   late DashboardProvider provider;
 
@@ -47,6 +43,10 @@ class _NotificationPageState extends State<NotificationPage> {
             if (snapshot.hasData) {
               UserModel userModel = UserModel.fromJson(snapshot.data?.data() as Map);
               print('userModel ${userModel.breedingRequests.length}');
+
+              if(userModel.breedingRequests.isEmpty){
+                return const Center(child: Text("No notifications"));
+              }
 
               return ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 10),

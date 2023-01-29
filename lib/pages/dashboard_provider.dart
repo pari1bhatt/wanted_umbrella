@@ -31,7 +31,6 @@ class DashboardProvider extends ChangeNotifier {
     currentUserModel = provider.currentUserModel;
 
     await userCol.where('email', isNotEqualTo: Prefs.getUserEmail()).get().then((value) async {
-      print("value explore: ${value.docs.length}");
       exploreData = [];
       for (var document in value.docs) {
         var users = UserModel.fromJson(document.data());
@@ -113,9 +112,6 @@ class DashboardProvider extends ChangeNotifier {
 
       for(DocumentReference data in model?.breedingRequests ?? []){
         if(data.id == currentUserModel?.id){
-          print("check both: ${data.id}");
-          print("check both: ${currentUserModel?.id}");
-          print("duplicate");
           AwesomeDialog(
             context: context,
             dialogType: DialogType.info,
@@ -132,9 +128,7 @@ class DashboardProvider extends ChangeNotifier {
 
 
       model?.breedingRequests.add(FirebaseFirestore.instance.doc('users/${currentUserModel?.id}'));
-      print('check data: ${model?.breedingRequests.length}');
       await doc.update(model!.toJson());
-      print("updated");
 
       AwesomeDialog(
         context: context,

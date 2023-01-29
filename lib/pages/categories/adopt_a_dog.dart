@@ -5,6 +5,8 @@ import 'package:wanted_umbrella/models/user_model.dart';
 import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 
+import '../../utils/prefs.dart';
+
 class AdoptADog extends StatefulWidget {
   const AdoptADog({Key? key}) : super(key: key);
 
@@ -21,6 +23,7 @@ class _AdoptADogState extends State<AdoptADog> {
 
   @override
   Widget build(BuildContext context) {
+    print('check email: ${Prefs.getUserEmail()}');
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -29,6 +32,7 @@ class _AdoptADogState extends State<AdoptADog> {
       body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection("users")
+              .where('email', isNotEqualTo: Prefs.getUserEmail())
               .where('showAdoption', isEqualTo: true)
               .snapshots(),
           builder: (context, snapshot) {

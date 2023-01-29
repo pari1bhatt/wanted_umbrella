@@ -35,7 +35,7 @@ class _AdoptionState extends State<Adoption> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Put your dog on adoption"),
+        title: const Text("Put your dog for adoption"),
       ),
       body: SingleChildScrollView(
         child: Column(

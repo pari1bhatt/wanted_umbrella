@@ -114,7 +114,7 @@ class _DashboardState extends State<Dashboard> {
       case 2:
         return const CategoriesPage();
       case 3:
-        return const ProfilePage();
+        return ProfilePage();
     }
   }
 }

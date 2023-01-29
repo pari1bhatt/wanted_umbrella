@@ -19,6 +19,7 @@ import 'package:wanted_umbrella/pages/on_boarding/login.dart';
 import 'package:wanted_umbrella/pages/on_boarding/register.dart';
 import 'package:wanted_umbrella/pages/profile/adoption.dart';
 import 'package:wanted_umbrella/pages/profile/dog_profile.dart';
+import 'package:wanted_umbrella/pages/profile/help.dart';
 import 'package:wanted_umbrella/pages/profile/vaccination.dart';
 
 import 'pages/on_boarding/dog_detail.dart';
@@ -55,6 +56,7 @@ class Routes {
   static const String dog_profile = '/dog_profile';
   static const String vaccination = '/vaccination';
   static const String adoption = '/adoption';
+  static const String help = '/help';
 
 
 
@@ -93,7 +95,7 @@ class Routes {
       case gift:
         return MaterialPageRoute(builder: (_) => const Gift(),settings: const RouteSettings(name: gift));
       case gift_payment:
-        return MaterialPageRoute(builder: (_) => const GIftPayment(),settings: const RouteSettings(name: gift_payment));
+        return MaterialPageRoute(builder: (_) => GIftPayment(visibleUserModel: settings.arguments as UserModel),settings: const RouteSettings(name: gift_payment));
       case gift_cart:
         return MaterialPageRoute(builder: (_) => const GiftCart(),settings: const RouteSettings(name: gift_cart));
       case articles_shows:
@@ -106,6 +108,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => Vaccination(),settings: const RouteSettings(name: vaccination));
       case adoption:
         return MaterialPageRoute(builder: (_) => Adoption(),settings: const RouteSettings(name: adoption));
+      case help:
+        return MaterialPageRoute(builder: (_) => HelpPage(),settings: const RouteSettings(name: help));
     }
     return MaterialPageRoute(builder: (_) => Container());
   }

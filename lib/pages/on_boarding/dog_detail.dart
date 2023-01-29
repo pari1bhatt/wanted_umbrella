@@ -112,6 +112,7 @@ class _DogDetailState extends State<DogDetail> {
                         child: DropdownButton<String>(
                           isExpanded: true,
                           underline: Container(),
+                          hint: Text('Select gender'),
                           value: onBoardingProvider.userModel.gender,
                           onChanged: (String? newValue) {
                             setState(() {
@@ -150,12 +151,13 @@ class _DogDetailState extends State<DogDetail> {
                           underline: Container(),
                           isExpanded: true,
                           value: onBoardingProvider.userModel.size,
+                          hint: Text('Select size'),
                           onChanged: (String? newValue) {
                             setState(() {
                               onBoardingProvider.userModel.size = newValue;
                             });
                           },
-                          items: <String>['Small', 'Medium', 'Large', 'Very Large']
+                          items: <String>['Miniature','Small', 'Medium', 'Large']
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,

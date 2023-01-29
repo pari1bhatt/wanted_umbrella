@@ -1,13 +1,17 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
+import '../../models/user_model.dart';
 import '../../routes.dart';
 import '../../utils/constants.dart';
 import '../../utils/utils.dart';
+import '../dashboard_provider.dart';
 
 class GIftPayment extends StatefulWidget {
-  const GIftPayment({Key? key}) : super(key: key);
+  const GIftPayment({Key? key, this.visibleUserModel}) : super(key: key);
+  final UserModel? visibleUserModel;
 
   @override
   State<GIftPayment> createState() => _GIftPaymentState();
@@ -15,6 +19,14 @@ class GIftPayment extends StatefulWidget {
 
 class _GIftPaymentState extends State<GIftPayment> {
   int? currentPage = 0;
+  late DashboardProvider provider;
+
+  @override
+  void initState() {
+    super.initState();
+    provider = Provider.of<DashboardProvider>(context, listen: false);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -182,16 +194,11 @@ class _GIftPaymentState extends State<GIftPayment> {
             child: TextButton(
               style: TextButton.styleFrom(backgroundColor: GetColors.purple),
               onPressed: () {
-                AwesomeDialog(
-                  context: context,
-                  dialogType: DialogType.success,
-                  animType: AnimType.scale,
-                  dismissOnTouchOutside: false,
-                  title: 'Thank you for shopping',
-                  desc: 'I hope you had a good payment experience. Wanted Umbrella wish you luck !!',
-                  btnCancel: null,
-                  btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
-                ).show();
+                if(widget.visibleUserModel == null){
+                  print("error");
+                  return;
+                }
+               provider.sendBookRequest(widget.visibleUserModel, context);
               },
               child: const Text('Make Payment', style: TextStyle(fontSize: 20, color: GetColors.white)),
             ),
