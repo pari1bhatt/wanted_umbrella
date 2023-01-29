@@ -1,11 +1,30 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:wanted_umbrella/models/chat_message.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
+
+import '../../models/userChat.dart';
+import '../../providers/chatProvider.dart';
+import '../../utils/firestore_constants.dart';
+import 'package:provider/provider.dart';
+
+import '../on_boarding/on_boarding_provider.dart';
 
 class MessageScreen extends StatefulWidget {
   final bool isChatBot;
 
-  const MessageScreen({this.isChatBot = false, Key? key}) : super(key: key);
+  /*final String roomID;
+  final UserChat userChat;
+  final UserChat currUser;*/
+
+
+  const MessageScreen(
+      {this.isChatBot = false,
+        /*required this.roomID,
+        required this.userChat,
+        required this.currUser,*/
+    Key? key}) : super(key: key);
 
   @override
   State<MessageScreen> createState() => _MessageScreenState();
@@ -15,17 +34,73 @@ class _MessageScreenState extends State<MessageScreen> {
   final chatInputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool haveText = false;
+  bool needJump_toEnd = false;
+
 
   @override
+  void dispose() {
+    chatInputController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+  // handle send message
+  void handleSend_message(ChatProvider chatProvider) {
+    if (haveText) {
+      setState(() {
+        needJump_toEnd = true;
+      });
+
+      ChatMessage chatMessage = new ChatMessage(
+        roomID: chatProvider.roomId,//widget.roomID,
+        FromUser: chatProvider.currentUserId,//widget.currUser.id.toString(),
+        text: chatInputController.text,
+        type: FirestoreContants.type_message_text,
+        time: DateTime.now().toString(),
+      );
+      chatProvider.sendChatMessage(chatMessage, chatProvider.roomId/*widget.roomID*/).then((value) {
+        chatInputController.text = "";
+        // show send animation
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+        stop_sendAnimation();
+        setState(() {
+          haveText = false;
+        });
+      });
+    } else {
+      Fluttertoast.showToast(
+          msg: 'Nothing to send', backgroundColor: Colors.grey);
+    }
+  }
+
+  // stop send animation for receive message after 300 milliseconds
+  // becase we need 300 milliseconds to show animation send
+  void stop_sendAnimation() async {
+    await Future.delayed(const Duration(milliseconds: 300), () {
+      setState(() {
+        needJump_toEnd = false;
+      });
+    });
+  }
+
+  void autoScroll_toEnd() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    } else {
+      setState(() => null);
+    }
+  }
+  @override
   Widget build(BuildContext context) {
+    final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
-      appBar: buildAppbar(context),
-      body: buildBody(context),
+      appBar: buildAppbar(context,chatProvider),
+      body: buildBody(context,chatProvider),
     );
   }
 
   // appbar
-  AppBar buildAppbar(BuildContext context) {
+  AppBar buildAppbar(BuildContext context,ChatProvider chatProvider) {
     return AppBar(
       leadingWidth: 40,
       elevation: 2,
@@ -61,78 +136,105 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 
   // body
-  SafeArea buildBody(BuildContext context) {
+  SafeArea buildBody(BuildContext context,ChatProvider chatProvider) {
     return SafeArea(
         child: Container(
       color: Colors.grey.withOpacity(0.00),
       child: Column(
         children: [
           Expanded(
-            child: ChatMessageList(),
+            child: ChatMessageList(chatProvider),
           ),
-          chatInputField(),
+          chatInputField(chatProvider),
         ],
       ),
     ));
   }
 
   // list message
-  Widget ChatMessageList() {
-    if (true) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            CircleAvatar(
-              backgroundImage: AssetImage(widget.isChatBot ? GetImages.robot_icon : GetImages.dog3),
-              radius: 50,
-              backgroundColor: GetColors.purple.withOpacity(0.2),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              widget.isChatBot ? "Chatbot" :"Bunty",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 5),
-            Text(widget.isChatBot ? "Ask Something..." : "Say hello..."),
-            const SizedBox(height: 20),
-          ],
-        ),
-      );
-    } else {
-      // convert QuerySnapShot to List data
-      List<ChatMessage> messageData = [];
-      for (int i = 0; i < 6; i++) {
-        String UserIDSent = "user_id";
+  Widget ChatMessageList(ChatProvider chatProvider) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: chatProvider.getMessageWithChatroomID(chatProvider.roomId/*widget.roomID*/),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          // if we got data
+          if (snapshot.data!.docs.length == 0) {
+            // if they haven't sent message
 
-        messageData.add(ChatMessage(
-          roomID: "2",
-          FromUser: "FromUser$i",
-          text: "Sample text message",
-          type: "type",
-          time: "time",
-        ));
-      }
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  CircleAvatar(
+                    backgroundImage: AssetImage(widget.isChatBot ? GetImages.robot_icon : GetImages.dog3),
+                    radius: 50,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    widget.isChatBot ? "Chatbot" :"Bunty",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text("Say hello..."),
+                  SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
+            );
+          } else {
+            // if they have sent message
+            WidgetsBinding.instance?.addPostFrameCallback((_) {
+              // when we sen message we need the send animation,
+              // but when we got the receive message we don't need animation
+              if (!needJump_toEnd) autoScroll_toEnd();
+            });
 
-      return ListView.builder(
-          controller: _scrollController,
-          itemCount: 6,
-          itemBuilder: (context, index) {
-            return messageData[index].FromUser == "FromUser5"
-                ? itemMessage_Sender(
+            // convert QuerySnapShot to List data
+            List<ChatMessage> messageData = [];
+            for (int i = 0; i < snapshot.data!.docs.length; i++) {
+              String UserID_sent =
+              snapshot.data!.docs[i][FirestoreContants.FromUser_message];
+
+              messageData.add(ChatMessage(
+                  roomID: chatProvider.roomId/*widget.roomID*/,
+                  FromUser: snapshot.data!.docs[i]
+                  [FirestoreContants.FromUser_message],
+                  text: snapshot.data!.docs[i][FirestoreContants.text_message],
+                  type: snapshot.data!.docs[i][FirestoreContants.type_message],
+                  time: snapshot.data!.docs[i]
+                  [FirestoreContants.time_message]));
+            }
+
+            return ListView.builder(
+                controller: _scrollController,
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  return messageData[index].FromUser == chatProvider.currentUserId/*widget.currUser.id*/
+                      ? itemMessage_Sender(
                     message: messageData[index].text,
                   )
-                : itemMessage_receiver(
-                    photo: GetImages.dog4,
+                      : itemMessage_receiver(
+                    photo: /*widget.userChat.photo!*/"",
                     message: messageData[index].text,
-                    // chatProvider: chatProvider,
+                    chatProvider: chatProvider,
                   );
-          });
-    }
+                });
+          }
+        } else
+          return Center(
+            child: Text("Loading..."),
+          );
+      },
+    );
   }
 
   // chat input
-  Widget chatInputField() {
+  Widget chatInputField(ChatProvider chatProvider) {
     return Row(
       children: [
         const SizedBox(width: 10),
@@ -148,14 +250,14 @@ class _MessageScreenState extends State<MessageScreen> {
                 Expanded(
                     child: TextField(
                   onChanged: (text) {
-                    // if (text.length > 0)
-                    //   setState(() {
-                    //     haveText = true;
-                    //   });
-                    // else
-                    //   setState(() {
-                    //     haveText = false;
-                    //   });
+                    if (text.length > 0)
+                      setState(() {
+                        haveText = true;
+                      });
+                    else
+                      setState(() {
+                        haveText = false;
+                      });
                   },
                   controller: chatInputController,
                   decoration: const InputDecoration(hintText: 'Type message', border: InputBorder.none),
@@ -167,7 +269,7 @@ class _MessageScreenState extends State<MessageScreen> {
                 const SizedBox(width: 13),
                 InkWell(
                     onTap: () {
-                      // handleSend_message(chatProvider);
+                      handleSend_message(chatProvider);
                     },
                     child: Icon(Icons.send,
                         color: haveText ? const Color.fromARGB(255, 0, 127, 232) : Colors.grey, size: 20)),
@@ -218,12 +320,11 @@ class itemMessage_Sender extends StatelessWidget {
 class itemMessage_receiver extends StatelessWidget {
   final String message;
   final String photo;
-
-  // final ChatProvider chatProvider;
+  final ChatProvider chatProvider;
   const itemMessage_receiver(
       {Key? key,
       required this.message,
-      // required this.chatProvider,
+      required this.chatProvider,
       required this.photo})
       : super(key: key);
 
@@ -232,10 +333,10 @@ class itemMessage_receiver extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 10, top: 20, bottom: 10),
       child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        CircleAvatar(
+       /* CircleAvatar(
           backgroundImage: AssetImage(photo),
           radius: 17,
-        ),
+        ),*/
         Container(
           margin: const EdgeInsets.only(left: 10),
           decoration: BoxDecoration(

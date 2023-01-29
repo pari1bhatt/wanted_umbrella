@@ -5,7 +5,9 @@ import 'package:wanted_umbrella/pages/dashboard_provider.dart';
 import 'package:wanted_umbrella/pages/explore/explore_page.dart';
 import 'package:wanted_umbrella/pages/profile/profile_page.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
+import '../providers/chatProvider.dart';
 import 'chat/chat_screen.dart';
+import 'on_boarding/on_boarding_provider.dart';
 
 
 class Dashboard extends StatefulWidget {
@@ -33,6 +35,9 @@ class _DashboardState extends State<Dashboard> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       provider.getExploreData(context);
     });
+
+
+
   }
 
   @override
@@ -44,6 +49,19 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
+
+    //todo static code for chat
+    final chatProvider = Provider.of<ChatProvider>(context);
+    final onBoardingProvider = Provider.of<OnBoardingProvider>(context);
+    chatProvider.currentUserId = onBoardingProvider.currentUserModel!.id!;
+    if(onBoardingProvider.currentUserModel!.email!.contains("shrisha01@gmail.com")){
+      chatProvider.fromUser = "1obRGm6HwzTBV2FMcoBP"; //guna's user id
+    }else if(onBoardingProvider.currentUserModel!.email!.contains("guna@gmail.com")){
+      chatProvider.fromUser = "aUdiD9ZWC3QMXul0RVn3"; //shrisha's  user id
+    }else{
+      chatProvider.fromUser = "";
+    }
+
     return Scaffold(
       extendBody: true,
       resizeToAvoidBottomInset: false,
