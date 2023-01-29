@@ -23,11 +23,11 @@ class LoginPageState extends State<LoginPage> {
    //String email = 'shrisha01@gmail.com';
    //String password = 'Shri@1234';
 
-    //String email = 'guna@gmail.com';
-    //String password = 'Guna@1234';
+    String email = 'guna@gmail.com';
+    String password = 'Guna@1234';
 
-   String email = '';
-   String password = '';
+   // String email = '';
+   // String password = '';
 
   bool wrongEmail = false;
   bool wrongPassword = false;

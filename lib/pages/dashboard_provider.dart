@@ -109,7 +109,6 @@ class DashboardProvider extends ChangeNotifier {
 
     if(model?.id != null){
       DocumentReference? doc = FirebaseFirestore.instance.doc("users/${model?.id}");
-
       for(DocumentReference data in model?.breedingRequests ?? []){
         if(data.id == currentUserModel?.id){
           AwesomeDialog(
@@ -125,11 +124,8 @@ class DashboardProvider extends ChangeNotifier {
           return;
         }
       }
-
-
       model?.breedingRequests.add(FirebaseFirestore.instance.doc('users/${currentUserModel?.id}'));
       await doc.update(model!.toJson());
-
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,
@@ -144,7 +140,38 @@ class DashboardProvider extends ChangeNotifier {
     else {
       debugPrint('id not found');
     }
+  }
 
+  acceptBreedingRequest(context, id) async {
+
+    print("id check: ${id}");
+
+    List? list = currentUserModel?.breedingRequests.cast().toList();
+
+    for (var element in list!) {
+      if(element.id == id){
+        print('remove');
+        currentUserModel?.breedingRequests.remove(element);
+        print('remove');
+        userCol.doc(currentUserModel!.id).update(currentUserModel!.toJson()).then((value) {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.success,
+            animType: AnimType.scale,
+            dismissOnTouchOutside: false,
+            title: 'Success',
+            desc: 'I hope you had a good booking experience. Wanted umbrella wishes you all luck\n 😀',
+            btnCancel: null,
+            btnOkOnPress: () {},
+          ).show();
+          notifyListeners();
+          return;
+        });
+      }
+    }
+    // for(DocumentReference a in currentUserModel?.breedingRequests ?? []) {
+    //
+    // }
   }
 
   reset() {

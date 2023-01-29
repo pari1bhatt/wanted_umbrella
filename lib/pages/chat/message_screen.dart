@@ -1,15 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:wanted_umbrella/models/chat_message.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
-
-import '../../models/userChat.dart';
+import 'package:wanted_umbrella/utils/utils.dart';
 import '../../providers/chatProvider.dart';
 import '../../utils/firestore_constants.dart';
 import 'package:provider/provider.dart';
 
-import '../on_boarding/on_boarding_provider.dart';
 
 class MessageScreen extends StatefulWidget {
   final bool isChatBot;
@@ -68,8 +65,7 @@ class _MessageScreenState extends State<MessageScreen> {
         });
       });
     } else {
-      Fluttertoast.showToast(
-          msg: 'Nothing to send', backgroundColor: Colors.grey);
+      Utils.showSnackBar(context, 'Nothing to send');
     }
   }
 

@@ -17,13 +17,12 @@ class ArticlesShows extends StatefulWidget {
 }
 
 class _ArticlesShowsState extends State<ArticlesShows> {
-  final List<SelectionModel> items = [
-    SelectionModel(text: 'All Breed Championship', image: GetImages.event1),
-    SelectionModel(text: 'Paw & Order', image: GetImages.event2),
-    SelectionModel(text: 'Show Dogs', image: GetImages.event3),
-    SelectionModel(text: 'The Flying Dog Show', image: GetImages.event4),
-    SelectionModel(text: 'YOYO\'s Dog Boarding', image: GetImages.event5),
-  ];
+  Stream<QuerySnapshot> stream = FirebaseFirestore.instance
+      .collection("articles")
+      .where('category', isEqualTo: 'event')
+      .snapshots();
+
+  List<String> choices = <String>['Articles', 'Events', 'All'];
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +30,23 @@ class _ArticlesShowsState extends State<ArticlesShows> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Dog articles and shows"),
+        actions: [
+          PopupMenuButton<String>(
+            icon: Icon(Icons.filter_alt),
+            onSelected: onFilter,
+            itemBuilder: (BuildContext context) {
+              return choices.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          )
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection("articles").snapshots(),
+          stream: stream,
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -68,18 +81,16 @@ class _ArticlesShowsState extends State<ArticlesShows> {
             Container(
               height: 150,
               // color: GetColors.grey.withOpacity(0.3),
-              child: Image.network(
-                articlesModel.imageUrl ?? GetImages.placeholderNetwork,
-                errorBuilder: (_, __, ___) {
-                  return const Icon(Icons.file_copy, size: 30);
-                },
-              ),
+              child: articlesModel.category == 'event'
+                  ? Image.network(articlesModel.imageUrl ?? GetImages.placeholderNetwork)
+                  : const Icon(Icons.file_copy, size: 30),
             ),
             const SizedBox(height: 5),
             Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                    color: GetColors.purple.withOpacity(0.8), borderRadius: BorderRadius.circular(8)),
+                    color: GetColors.purple.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(8)),
                 child: Text(
                   articlesModel.title ?? '',
                   style: const TextStyle(color: GetColors.white),
@@ -91,7 +102,7 @@ class _ArticlesShowsState extends State<ArticlesShows> {
     );
   }
 
-  onItemTap (context,String? url){
+  onItemTap(context, String? url) {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.question,
@@ -99,8 +110,26 @@ class _ArticlesShowsState extends State<ArticlesShows> {
       dismissOnTouchOutside: false,
       title: 'Please confirm',
       desc: 'Are you sure you want to Download? If yes, then you will be redirect to Youtube',
-      btnCancelOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.articles_shows)),
+      btnCancelOnPress: () =>
+          Navigator.popUntil(context, ModalRoute.withName(Routes.articles_shows)),
       btnOkOnPress: () => Utils.openUrl(url),
     ).show();
+  }
+
+  onFilter(value) {
+    if (value == 'Events') {
+      stream = FirebaseFirestore.instance
+          .collection("articles")
+          .where('category', isEqualTo: 'event')
+          .snapshots();
+    } else if (value == 'Articles') {
+      stream = FirebaseFirestore.instance
+          .collection("articles")
+          .where('category', isEqualTo: 'article')
+          .snapshots();
+    } else {
+      stream = FirebaseFirestore.instance.collection("articles").snapshots();
+    }
+    setState(() {});
   }
 }
