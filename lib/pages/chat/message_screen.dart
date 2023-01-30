@@ -3,25 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:wanted_umbrella/models/chat_message.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
 import 'package:wanted_umbrella/utils/utils.dart';
+import '../../models/userChat.dart';
 import '../../providers/chatProvider.dart';
 import '../../utils/firestore_constants.dart';
 import 'package:provider/provider.dart';
 
-
 class MessageScreen extends StatefulWidget {
   final bool isChatBot;
 
-  /*final String roomID;
-  final UserChat userChat;
-  final UserChat currUser;*/
-
+  final String roomID;
+  final UserChat? userChat; //ohher user
+  final UserChat? currUser; //logged in user
 
   const MessageScreen(
       {this.isChatBot = false,
-        /*required this.roomID,
-        required this.userChat,
-        required this.currUser,*/
-    Key? key}) : super(key: key);
+      required this.userChat,
+      required this.roomID,
+      required this.currUser,
+      Key? key})
+      : super(key: key);
 
   @override
   State<MessageScreen> createState() => _MessageScreenState();
@@ -33,13 +33,13 @@ class _MessageScreenState extends State<MessageScreen> {
   bool haveText = false;
   bool needJump_toEnd = false;
 
-
   @override
   void dispose() {
     chatInputController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
+
   // handle send message
   void handleSend_message(ChatProvider chatProvider) {
     if (haveText) {
@@ -48,13 +48,13 @@ class _MessageScreenState extends State<MessageScreen> {
       });
 
       ChatMessage chatMessage = new ChatMessage(
-        roomID: chatProvider.roomId,//widget.roomID,
-        FromUser: chatProvider.currentUserId,//widget.currUser.id.toString(),
+        roomID: widget.roomID,
+        FromUser: widget.currUser!.id.toString(),
         text: chatInputController.text,
         type: FirestoreContants.type_message_text,
         time: DateTime.now().toString(),
       );
-      chatProvider.sendChatMessage(chatMessage, chatProvider.roomId/*widget.roomID*/).then((value) {
+      chatProvider.sendChatMessage(chatMessage, widget.roomID).then((value) {
         chatInputController.text = "";
         // show send animation
         _scrollController.animateTo(_scrollController.position.maxScrollExtent,
@@ -86,17 +86,18 @@ class _MessageScreenState extends State<MessageScreen> {
       setState(() => null);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
-      appBar: buildAppbar(context,chatProvider),
-      body: buildBody(context,chatProvider),
+      appBar: buildAppbar(context, chatProvider),
+      body: buildBody(context, chatProvider),
     );
   }
 
   // appbar
-  AppBar buildAppbar(BuildContext context,ChatProvider chatProvider) {
+  AppBar buildAppbar(BuildContext context, ChatProvider chatProvider) {
     return AppBar(
       leadingWidth: 40,
       elevation: 2,
@@ -105,19 +106,31 @@ class _MessageScreenState extends State<MessageScreen> {
           ? Text("Chatbot")
           : Row(
               children: [
-                const CircleAvatar(backgroundImage: AssetImage(GetImages.dog3), radius: 22),
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                          image: NetworkImage(widget.userChat!.photo!),
+                          fit: BoxFit.cover)),
+                ),
                 const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Bunty",
+                      widget.userChat!.name!,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black.withOpacity(0.7),
+                        color: Colors.white,
                       ),
                     ),
-                    const Text("Active 3m ago", style: TextStyle(fontSize: 12)),
+                    Text("Active 3m ago",
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white.withOpacity(0.7)
+                        )),
                   ],
                 )
               ],
@@ -132,7 +145,7 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 
   // body
-  SafeArea buildBody(BuildContext context,ChatProvider chatProvider) {
+  SafeArea buildBody(BuildContext context, ChatProvider chatProvider) {
     return SafeArea(
         child: Container(
       color: Colors.grey.withOpacity(0.00),
@@ -150,7 +163,7 @@ class _MessageScreenState extends State<MessageScreen> {
   // list message
   Widget ChatMessageList(ChatProvider chatProvider) {
     return StreamBuilder<QuerySnapshot>(
-      stream: chatProvider.getMessageWithChatroomID(chatProvider.roomId/*widget.roomID*/),
+      stream: chatProvider.getMessageWithChatroomID(widget.roomID),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
           // if we got data
@@ -161,15 +174,25 @@ class _MessageScreenState extends State<MessageScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  CircleAvatar(
-                    backgroundImage: AssetImage(widget.isChatBot ? GetImages.robot_icon : GetImages.dog3),
-                    radius: 50,
-                  ),
+                  widget.isChatBot
+                      ? CircleAvatar(
+                          backgroundImage: AssetImage(GetImages.robot_icon),
+                          radius: 50,
+                        )
+                      : Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  image: NetworkImage(widget.userChat!.photo!),
+                                  fit: BoxFit.cover)),
+                        ),
                   SizedBox(
                     height: 10,
                   ),
                   Text(
-                    widget.isChatBot ? "Chatbot" :"Bunty",
+                    widget.isChatBot ? "Chatbot" : widget.userChat!.name!,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -194,31 +217,31 @@ class _MessageScreenState extends State<MessageScreen> {
             List<ChatMessage> messageData = [];
             for (int i = 0; i < snapshot.data!.docs.length; i++) {
               String UserID_sent =
-              snapshot.data!.docs[i][FirestoreContants.FromUser_message];
+                  snapshot.data!.docs[i][FirestoreContants.FromUser_message];
 
               messageData.add(ChatMessage(
-                  roomID: chatProvider.roomId/*widget.roomID*/,
+                  roomID: widget.roomID,
                   FromUser: snapshot.data!.docs[i]
-                  [FirestoreContants.FromUser_message],
+                      [FirestoreContants.FromUser_message],
                   text: snapshot.data!.docs[i][FirestoreContants.text_message],
                   type: snapshot.data!.docs[i][FirestoreContants.type_message],
                   time: snapshot.data!.docs[i]
-                  [FirestoreContants.time_message]));
+                      [FirestoreContants.time_message]));
             }
 
             return ListView.builder(
                 controller: _scrollController,
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
-                  return messageData[index].FromUser == chatProvider.currentUserId/*widget.currUser.id*/
+                  return messageData[index].FromUser == widget.currUser!.id
                       ? itemMessage_Sender(
-                    message: messageData[index].text,
-                  )
+                          message: messageData[index].text,
+                        )
                       : itemMessage_receiver(
-                    photo: /*widget.userChat.photo!*/"",
-                    message: messageData[index].text,
-                    chatProvider: chatProvider,
-                  );
+                          photo: /*widget.userChat.photo!*/ "",
+                          message: messageData[index].text,
+                          chatProvider: chatProvider,
+                        );
                 });
           }
         } else
@@ -237,8 +260,9 @@ class _MessageScreenState extends State<MessageScreen> {
         Expanded(
           child: Container(
             margin: const EdgeInsets.only(bottom: 20, top: 10),
-            decoration:
-                BoxDecoration(color: Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.all(Radius.circular(30))),
+            decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.3),
+                borderRadius: BorderRadius.all(Radius.circular(30))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -256,19 +280,24 @@ class _MessageScreenState extends State<MessageScreen> {
                       });
                   },
                   controller: chatInputController,
-                  decoration: const InputDecoration(hintText: 'Type message', border: InputBorder.none),
+                  decoration: const InputDecoration(
+                      hintText: 'Type message', border: InputBorder.none),
                 )),
                 const SizedBox(width: 10),
                 InkWell(
                     onTap: () {},
-                    child: const Icon(Icons.camera_alt_outlined, color: Color.fromARGB(255, 0, 127, 232), size: 20)),
+                    child: const Icon(Icons.camera_alt_outlined,
+                        color: Color.fromARGB(255, 0, 127, 232), size: 20)),
                 const SizedBox(width: 13),
                 InkWell(
                     onTap: () {
                       handleSend_message(chatProvider);
                     },
                     child: Icon(Icons.send,
-                        color: haveText ? const Color.fromARGB(255, 0, 127, 232) : Colors.grey, size: 20)),
+                        color: haveText
+                            ? const Color.fromARGB(255, 0, 127, 232)
+                            : Colors.grey,
+                        size: 20)),
                 const SizedBox(width: 13)
               ],
             ),
@@ -290,24 +319,29 @@ class itemMessage_Sender extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(right: 10, top: 20, bottom: 10),
-      child: Row(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.end, children: [
-        Container(
-          decoration: const BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.all(Radius.circular(20))),
-          child: Padding(
-            padding: const EdgeInsets.all(11.0),
-            child: Text(
-              message,
-              style: const TextStyle(color: Colors.white, fontSize: 15),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              child: Padding(
+                padding: const EdgeInsets.all(11.0),
+                child: Text(
+                  message,
+                  style: const TextStyle(color: Colors.white, fontSize: 15),
+                ),
+              ),
             ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        const Icon(
-          Icons.check_circle,
-          color: Color.fromARGB(255, 35, 156, 255),
-          size: 14,
-        )
-      ]),
+            const SizedBox(width: 10),
+            const Icon(
+              Icons.check_circle,
+              color: Color.fromARGB(255, 35, 156, 255),
+              size: 14,
+            )
+          ]),
     );
   }
 }
@@ -317,6 +351,7 @@ class itemMessage_receiver extends StatelessWidget {
   final String message;
   final String photo;
   final ChatProvider chatProvider;
+
   const itemMessage_receiver(
       {Key? key,
       required this.message,
@@ -329,14 +364,15 @@ class itemMessage_receiver extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 10, top: 20, bottom: 10),
       child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-       /* CircleAvatar(
+        /* CircleAvatar(
           backgroundImage: AssetImage(photo),
           radius: 17,
         ),*/
         Container(
           margin: const EdgeInsets.only(left: 10),
           decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.3), borderRadius: const BorderRadius.all(Radius.circular(20))),
+              color: Colors.grey.withOpacity(0.3),
+              borderRadius: const BorderRadius.all(Radius.circular(20))),
           child: Padding(
             padding: const EdgeInsets.all(11.0),
             child: Text(

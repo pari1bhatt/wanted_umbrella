@@ -22,6 +22,7 @@ import 'package:wanted_umbrella/pages/profile/dog_profile.dart';
 import 'package:wanted_umbrella/pages/profile/help.dart';
 import 'package:wanted_umbrella/pages/profile/vaccination.dart';
 
+import 'models/userChat.dart';
 import 'pages/on_boarding/dog_detail.dart';
 import 'pages/on_boarding/dog_photos.dart';
 
@@ -81,7 +82,10 @@ class Routes {
       case choose_personality:
         return MaterialPageRoute(builder: (_) => const ChoosePersonality(), settings: const RouteSettings(name: choose_personality));
       case messege:
-        return MaterialPageRoute(builder: (_) => const MessageScreen());
+        List<dynamic>? args = settings.arguments as List?;
+        return MaterialPageRoute(
+          builder: (_) => MessageScreen(roomID : args![0], currUser: args[1],userChat: args[2] as UserChat),
+        );
       case find_a_mate:
         return MaterialPageRoute(builder: (_) => const FindAMate(), settings: const RouteSettings(name: find_a_mate));
       case notification:
