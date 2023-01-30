@@ -198,7 +198,7 @@ class _GIftPaymentState extends State<GIftPayment> {
                   print("error");
                   return;
                 }
-               provider.sendBookRequest(widget.visibleUserModel, context);
+               provider.sendBreedingRequest(widget.visibleUserModel, context);
               },
               child: const Text('Make Payment', style: TextStyle(fontSize: 20, color: GetColors.white)),
             ),

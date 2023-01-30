@@ -375,7 +375,7 @@ class _FindAMateState extends State<FindAMate> {
 
   onRequest(){
     if(visibleUserModel?.gender == 'Female'){
-      provider.sendBookRequest(visibleUserModel,context);
+      provider.sendBreedingRequest(visibleUserModel,context);
     } else
     Navigator.pushNamed(context, Routes.gift_payment, arguments: visibleUserModel);
   }

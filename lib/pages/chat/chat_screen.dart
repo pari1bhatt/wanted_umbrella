@@ -73,7 +73,7 @@ class ChatScreenState extends State<ChatScreen> {
                             future: FirebaseFirestore.instance
                                 .doc("users/${provider.currentUserModel?.matchRequests[index].id}")
                                 .get(),
-                            builder: (context, snapshot) {
+                            builder: (ctx, snapshot) {
                               if (snapshot.hasError) {
                                 return const Text("Something went wrong");
                               }
@@ -96,7 +96,7 @@ class ChatScreenState extends State<ChatScreen> {
                                         TextButton(
                                           style: TextButton.styleFrom(
                                               backgroundColor: GetColors.purple),
-                                          onPressed: onMatchClick,
+                                          onPressed: ()=> onMatchClick(innerModel,context),
                                           child: const Text(
                                             "Match",
                                             style: TextStyle(color: GetColors.white),
@@ -235,16 +235,16 @@ class ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  onMatchClick() {
+  onMatchClick(UserModel? model, context) {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.question,
       animType: AnimType.scale,
       dismissOnTouchOutside: false,
       title: 'Confirmation',
-      desc: 'Are you sure you want to accept?',
+      desc: 'Are you sure you want to accept request?',
       btnCancelOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
-      btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+      btnOkOnPress: () => provider.acceptMatchRequest(model,context),
     ).show();
   }
 }
