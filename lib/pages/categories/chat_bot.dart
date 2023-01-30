@@ -8,7 +8,7 @@ class ChatBot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MessageScreen(isChatBot: true),
+      body: MessageScreen(isChatBot: true,userChat: null),
     );
   }
 }

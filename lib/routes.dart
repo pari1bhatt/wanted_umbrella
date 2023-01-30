@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanted_umbrella/models/userChat.dart';
 import 'package:wanted_umbrella/models/user_model.dart';
 import 'package:wanted_umbrella/pages/categories/adopt_a_dog.dart';
 import 'package:wanted_umbrella/pages/categories/articles_shows.dart';
@@ -81,7 +82,10 @@ class Routes {
       case choose_personality:
         return MaterialPageRoute(builder: (_) => const ChoosePersonality(), settings: const RouteSettings(name: choose_personality));
       case messege:
-        return MaterialPageRoute(builder: (_) => const MessageScreen());
+        final args = settings.arguments as UserChat;
+        return MaterialPageRoute(
+            builder: (_) => MessageScreen(userChat: args),
+        );
       case find_a_mate:
         return MaterialPageRoute(builder: (_) => const FindAMate(), settings: const RouteSettings(name: find_a_mate));
       case notification:

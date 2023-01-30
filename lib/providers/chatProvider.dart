@@ -35,4 +35,11 @@ class ChatProvider extends ChangeNotifier {
       FirestoreContants.time_message: chatMessage.time,
     });
   }
+
+
+  Stream<QuerySnapshot> getMemberList() {
+    return FirebaseFirestore.instance
+        .collection(FirestoreContants.userCollection)
+        .snapshots();
+  }
 }

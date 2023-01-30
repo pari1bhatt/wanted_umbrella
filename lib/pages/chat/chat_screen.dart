@@ -1,7 +1,14 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wanted_umbrella/providers/chatProvider.dart';
 import 'package:wanted_umbrella/routes.dart';
 import 'package:wanted_umbrella/utils/constants.dart';
+
+import '../../models/userChat.dart';
+import '../../utils/firestore_constants.dart';
+import '../on_boarding/on_boarding_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -13,14 +20,17 @@ class ChatScreen extends StatefulWidget {
 class ChatScreenState extends State<ChatScreen> {
   late Size size;
   bool isNoMatch = false;
-
+  String myUserId = "";
 
   @override
   Widget build(BuildContext context) {
-    return getBody();
+    final chatProvider = Provider.of<ChatProvider>(context);
+    final onBoardingProvider = Provider.of<OnBoardingProvider>(context);
+    myUserId = onBoardingProvider.currentUserModel!.id!;
+    return getBody(chatProvider);
   }
 
-  Widget getBody() {
+  Widget getBody(ChatProvider chatProvider) {
     size = MediaQuery.of(context).size;
     return SafeArea(
       bottom: false,
@@ -32,7 +42,9 @@ class ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.only(left: 8, top: 0, right: 8),
             child: Container(
               height: 38,
-              decoration: BoxDecoration(color: GetColors.grey.withOpacity(0.2), borderRadius: BorderRadius.circular(5)),
+              decoration: BoxDecoration(
+                  color: GetColors.grey.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(5)),
               child: TextField(
                 cursorColor: GetColors.black.withOpacity(0.5),
                 decoration: InputDecoration(
@@ -49,7 +61,10 @@ class ChatScreenState extends State<ChatScreen> {
             padding: EdgeInsets.only(left: 15, bottom: 10, top: 10),
             child: Text(
               "Pending matches",
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: GetColors.purple),
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: GetColors.purple),
             ),
           ),
           // const SizedBox(height: 10),
@@ -60,7 +75,8 @@ class ChatScreenState extends State<ChatScreen> {
               children: [
                 const Text("Bunty - Husky\nhas requested for a match"),
                 TextButton(
-                  style: TextButton.styleFrom(backgroundColor: GetColors.purple),
+                  style:
+                      TextButton.styleFrom(backgroundColor: GetColors.purple),
                   onPressed: onMatchClick,
                   child: const Text(
                     "Match",
@@ -76,7 +92,10 @@ class ChatScreenState extends State<ChatScreen> {
             padding: EdgeInsets.only(left: 15),
             child: Text(
               "Your recent matches",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: GetColors.purple),
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: GetColors.purple),
             ),
           ),
           const SizedBox(height: 10),
@@ -97,7 +116,9 @@ class ChatScreenState extends State<ChatScreen> {
                           children: <Widget>[
                             Container(
                               decoration: BoxDecoration(
-                                  shape: BoxShape.circle, border: Border.all(color: GetColors.purple, width: 3)),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: GetColors.purple, width: 3)),
                               child: Padding(
                                 padding: const EdgeInsets.all(3),
                                 child: Container(
@@ -105,7 +126,9 @@ class ChatScreenState extends State<ChatScreen> {
                                   height: 70,
                                   decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
-                                      image: DecorationImage(image: AssetImage(GetImages.dog1), fit: BoxFit.cover)),
+                                      image: DecorationImage(
+                                          image: AssetImage(GetImages.dog1),
+                                          fit: BoxFit.cover)),
                                 ),
                               ),
                             ),
@@ -120,7 +143,9 @@ class ChatScreenState extends State<ChatScreen> {
                                       decoration: BoxDecoration(
                                           color: GetColors.green,
                                           shape: BoxShape.circle,
-                                          border: Border.all(color: GetColors.white, width: 3)),
+                                          border: Border.all(
+                                              color: GetColors.white,
+                                              width: 3)),
                                     ),
                                   )
                                 : Container()
@@ -148,8 +173,8 @@ class ChatScreenState extends State<ChatScreen> {
                 ? getMatchToChat()
                 : Padding(
                     padding: const EdgeInsets.only(left: 15),
-                    child: ListView.builder(
-                      itemCount: 8,
+                    /*child: ListView.builder(
+                      itemCount: 1,
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 18),
@@ -222,7 +247,8 @@ class ChatScreenState extends State<ChatScreen> {
                           ),
                         );
                       },
-                    ),
+                    ),*/
+                    child: ChatList(chatProvider),
                   ),
           )
         ],
@@ -230,9 +256,116 @@ class ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget ChatList(ChatProvider chatProvider) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: chatProvider.getMemberList(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          List<UserChat> userList = [];
+          for (int i = 0; i < snapshot.data!.docs.length; i++) {
+            var uid = snapshot.data!.docs[i][FirestoreContants.id_user];
+            if (uid == myUserId) {
+              continue;
+            }
+            userList.add(UserChat(
+                email: snapshot.data!.docs[i][FirestoreContants.email_user],
+                id: snapshot.data!.docs[i][FirestoreContants.id_user],
+                name: snapshot.data!.docs[i][FirestoreContants.name_user],
+                photo: snapshot.data!.docs[i][FirestoreContants.photo_user]));
+          }
+          return ListView.builder(
+            itemCount: userList.length,
+            itemBuilder: (context, index) {
+              return singleMember(userList[index]);
+            },
+          );
+        } else
+          return Center(
+            child: Text("Loading."),
+          );
+      },
+    );
+  }
+
+  Widget singleMember(UserChat userChat) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: InkWell(
+        onTap: () {
+          Navigator.pushNamed(context, Routes.messege,arguments: userChat);
+        },
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 70,
+              height: 70,
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: GetColors.purple, width: 3)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                                image: NetworkImage(userChat.photo!),
+                                fit: BoxFit.cover)),
+                      ),
+                    ),
+                  ),
+                  // If user online then show green dot
+                  true
+                      ? Positioned(
+                          top: 48,
+                          left: 52,
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                                color: GetColors.green,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: GetColors.white, width: 3)),
+                          ),
+                        )
+                      : Container()
+                ],
+              ),
+            ),
+            const SizedBox(width: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  userChat.name ?? "",
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 5),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width - 135,
+                  child: Text(
+                    "Message - 1:00 pm",
+                    style: TextStyle(
+                        fontSize: 15, color: GetColors.black.withOpacity(0.8)),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   getMatchToChat() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: size.width*.15),
+      padding: EdgeInsets.symmetric(horizontal: size.width * .15),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -246,9 +379,11 @@ class ChatScreenState extends State<ChatScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text("Match to chat", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text("Match to chat",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text(GetStrings.emptyChatMessage, textAlign: TextAlign.center, style: TextStyle(fontSize: 13)),
+          const Text(GetStrings.emptyChatMessage,
+              textAlign: TextAlign.center, style: TextStyle(fontSize: 13)),
         ],
       ),
     );
@@ -262,8 +397,10 @@ class ChatScreenState extends State<ChatScreen> {
       dismissOnTouchOutside: false,
       title: 'Confirmation',
       desc: 'Are you sure you want to accept?',
-      btnCancelOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
-      btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+      btnCancelOnPress: () =>
+          Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+      btnOkOnPress: () =>
+          Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
     ).show();
   }
 }

@@ -15,12 +15,13 @@ class MessageScreen extends StatefulWidget {
   final bool isChatBot;
 
   /*final String roomID;
-  final UserChat userChat;
-  final UserChat currUser;*/
+    final UserChat currUser;*/
+  final UserChat? userChat;
 
 
   const MessageScreen(
       {this.isChatBot = false,
+        required this.userChat,
         /*required this.roomID,
         required this.userChat,
         required this.currUser,*/
@@ -31,6 +32,7 @@ class MessageScreen extends StatefulWidget {
 }
 
 class _MessageScreenState extends State<MessageScreen> {
+
   final chatInputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool haveText = false;
@@ -90,6 +92,7 @@ class _MessageScreenState extends State<MessageScreen> {
       setState(() => null);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
@@ -115,7 +118,7 @@ class _MessageScreenState extends State<MessageScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Bunty",
+                      widget.userChat!.name!,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black.withOpacity(0.7),
