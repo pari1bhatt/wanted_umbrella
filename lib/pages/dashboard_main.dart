@@ -34,10 +34,8 @@ class _DashboardState extends State<Dashboard> {
     provider =Provider.of<DashboardProvider>(context,listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       provider.getExploreData(context);
+      // provider.getChatData(context);
     });
-
-
-
   }
 
   @override
@@ -49,17 +47,19 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
-
+    provider =Provider.of<DashboardProvider>(context);
     //todo static code for chat
     final chatProvider = Provider.of<ChatProvider>(context);
-    final onBoardingProvider = Provider.of<OnBoardingProvider>(context);
-    chatProvider.currentUserId = onBoardingProvider.currentUserModel!.id!;
-    if(onBoardingProvider.currentUserModel!.email!.contains("shrisha01@gmail.com")){
-      chatProvider.fromUser = "1obRGm6HwzTBV2FMcoBP"; //guna's user id
-    }else if(onBoardingProvider.currentUserModel!.email!.contains("guna@gmail.com")){
-      chatProvider.fromUser = "aUdiD9ZWC3QMXul0RVn3"; //shrisha's  user id
-    }else{
-      chatProvider.fromUser = "";
+    // final onBoardingProvider = Provider.of<OnBoardingProvider>(context);
+    if(provider.currentUserModel != null){
+      chatProvider.currentUserId = provider.currentUserModel!.id!;
+      if(provider.currentUserModel!.email!.contains("shrisha01@gmail.com")){
+        chatProvider.fromUser = "1obRGm6HwzTBV2FMcoBP"; //guna's user id
+      }else if(provider.currentUserModel!.email!.contains("guna@gmail.com")){
+        chatProvider.fromUser = "aUdiD9ZWC3QMXul0RVn3"; //shrisha's  user id
+      }else{
+        chatProvider.fromUser = "";
+      }
     }
 
     return Scaffold(

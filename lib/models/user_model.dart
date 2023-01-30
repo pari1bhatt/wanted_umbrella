@@ -8,6 +8,8 @@ class UserModel {
   String? breed;
   Timestamp? created;
   List<DocumentReference> breedingRequests = [];
+  List<DocumentReference> matchRequests = [];
+  List<DocumentReference> matchAccepted = [];
   List<String>? dog_images = [];
   String? profile_image;
   String? dog_name;
@@ -28,6 +30,8 @@ class UserModel {
       this.breed,
       this.created,
       this.breedingRequests = const [],
+      this.matchAccepted = const [],
+      this.matchRequests = const [],
       this.dog_images,
       this.profile_image,
       this.dog_name,
@@ -51,6 +55,16 @@ class UserModel {
           ? (json['breedingRequests'] is DocumentReference)
               ? []
               : (List<DocumentReference>.from(json['breedingRequests']))
+          : [],
+      matchAccepted: json['matchAccepted'] != null
+          ? (json['matchAccepted'] is DocumentReference)
+              ? []
+              : (List<DocumentReference>.from(json['matchAccepted']))
+          : [],
+      matchRequests: json['matchRequests'] != null
+          ? (json['matchRequests'] is DocumentReference)
+              ? []
+              : (List<DocumentReference>.from(json['matchRequests']))
           : [],
       dog_images: json['dog_images'] != null ? List<String>.from(json['dog_images']) : null,
       dog_name: json['dog_name'],
@@ -84,6 +98,8 @@ class UserModel {
     data['name'] = name;
     data['size'] = size;
     data['breedingRequests'] = breedingRequests;
+    data['matchAccepted'] = matchAccepted;
+    data['matchRequests'] = matchRequests;
     if (personalities != null) {
       data['personalities'] = personalities;
     }

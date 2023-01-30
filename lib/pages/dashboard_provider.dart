@@ -13,6 +13,7 @@ import 'package:wanted_umbrella/utils/prefs.dart';
 import 'package:wanted_umbrella/utils/utils.dart';
 
 import '../models/selection_model.dart';
+import '../providers/chatProvider.dart';
 import 'on_boarding/on_boarding_provider.dart';
 
 class DashboardProvider extends ChangeNotifier {
@@ -60,6 +61,21 @@ class DashboardProvider extends ChangeNotifier {
       notifyListeners();
       print("notified");
     });
+  }
+
+  getChatData (context){
+    //todo static code for chat
+    final chatProvider = Provider.of<ChatProvider>(context);
+    // final onBoardingProvider = Provider.of<OnBoardingProvider>(context);
+    chatProvider.currentUserId = currentUserModel!.id!;
+    if(currentUserModel!.email!.contains("shrisha01@gmail.com")){
+      chatProvider.fromUser = "1obRGm6HwzTBV2FMcoBP"; //guna's user id
+    }else if(currentUserModel!.email!.contains("guna@gmail.com")){
+      chatProvider.fromUser = "aUdiD9ZWC3QMXul0RVn3"; //shrisha's  user id
+    }else{
+      chatProvider.fromUser = "";
+    }
+    notifyListeners();
   }
 
   getFilteredData(String? breed, String? gender) async {
