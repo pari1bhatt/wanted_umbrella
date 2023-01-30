@@ -203,7 +203,6 @@ class ChatScreenState extends State<ChatScreen> {
         onTap: () {
           String roomId = chatProvider.getChatRoomID(provider.currentUserModel!
               .id.toString(), userChat.id.toString());
-          ;
 
           chatProvider.getChatRoom(roomId).then((querySnapShot) {
             if (querySnapShot.docs.length == 0) {
