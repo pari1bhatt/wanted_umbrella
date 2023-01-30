@@ -63,21 +63,6 @@ class DashboardProvider extends ChangeNotifier {
     });
   }
 
-  getChatData (context){
-    //todo static code for chat
-    final chatProvider = Provider.of<ChatProvider>(context);
-    // final onBoardingProvider = Provider.of<OnBoardingProvider>(context);
-    chatProvider.currentUserId = currentUserModel!.id!;
-    if(currentUserModel!.email!.contains("shrisha01@gmail.com")){
-      chatProvider.fromUser = "1obRGm6HwzTBV2FMcoBP"; //guna's user id
-    }else if(currentUserModel!.email!.contains("guna@gmail.com")){
-      chatProvider.fromUser = "aUdiD9ZWC3QMXul0RVn3"; //shrisha's  user id
-    }else{
-      chatProvider.fromUser = "";
-    }
-    notifyListeners();
-  }
-
   getFilteredData(String? breed, String? gender) async {
     if (breed != null && gender != null) {
       var value = await FirebaseFirestore.instance

@@ -48,19 +48,6 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     provider =Provider.of<DashboardProvider>(context);
-    //todo static code for chat
-    final chatProvider = Provider.of<ChatProvider>(context);
-    // final onBoardingProvider = Provider.of<OnBoardingProvider>(context);
-    if(provider.currentUserModel != null){
-      chatProvider.currentUserId = provider.currentUserModel!.id!;
-      if(provider.currentUserModel!.email!.contains("shrisha01@gmail.com")){
-        chatProvider.fromUser = "1obRGm6HwzTBV2FMcoBP"; //guna's user id
-      }else if(provider.currentUserModel!.email!.contains("guna@gmail.com")){
-        chatProvider.fromUser = "aUdiD9ZWC3QMXul0RVn3"; //shrisha's  user id
-      }else{
-        chatProvider.fromUser = "";
-      }
-    }
 
     return Scaffold(
       extendBody: true,
