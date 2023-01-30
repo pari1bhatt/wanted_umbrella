@@ -103,83 +103,59 @@ class _ExplorePageState extends State<ExplorePage> {
                     ),
                     color: Colors.white24),
                 margin: const EdgeInsets.fromLTRB(24, 40, 24, 24),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '${bloc.exploreData[index].dog_name}  ',
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  softWrap: false,
-                                  style: const TextStyle(
-                                      color: GetColors.white,
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  '${bloc.exploreData[index].breed}',
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  softWrap: false,
-                                  style: const TextStyle(color: GetColors.white, fontSize: 15),
-                                )
-                              ],
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${bloc.exploreData[index].dog_name}  ',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              softWrap: false,
+                              style: const TextStyle(
+                                  color: GetColors.white,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold),
                             ),
-                          ),
+                            Text(
+                              '${bloc.exploreData[index].breed}',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              softWrap: false,
+                              style: const TextStyle(color: GetColors.white, fontSize: 15),
+                            ),
+                            const Spacer(),
+                            Icon(
+                              bloc.exploreData[index].gender == 'Male' ? Icons.male : Icons.female,
+                              color: bloc.exploreData[index].gender == 'Male'
+                                  ? GetColors.blue
+                                  : GetColors.pink,
+                              size: 26,
+                            )
+                          ],
                         ),
-                        Flexible(
-                          child: Row(
-                            children: List.generate(
-                                bloc.exploreData[index].personalities?.length ?? 0,
-                                (i) => Row(
-                                      children: [
-                                        Chip(
-                                          padding: EdgeInsets.zero,
-                                          label: Text(bloc.exploreData[index].personalities![i]),
-                                        ),
-                                        const SizedBox(width: 5)
-                                      ],
-                                    )),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.all(8),
-                    //   child: ElevatedButton.icon(
-                    //     onPressed: () {},
-                    //     icon: const Icon(
-                    //       Icons.directions_sharp,
-                    //       color: Colors.white,
-                    //     ),
-                    //     label: const Text(
-                    //       "Profile",
-                    //       style: TextStyle(
-                    //         color: Colors.white,
-                    //         fontSize: 14,
-                    //         overflow: TextOverflow.ellipsis,
-                    //         fontWeight: FontWeight.bold,
-                    //       ),
-                    //     ),
-                    //     style: ElevatedButton.styleFrom(
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(30),
-                    //       ),
-                    //       elevation: 8,
-                    //       shadowColor: Colors.deepPurple,
-                    //     ),
-                    //   ),
-                    // ),
+                    Flexible(
+                      child: Row(
+                        children: List.generate(
+                            bloc.exploreData[index].personalities?.length ?? 0,
+                            (i) => Row(
+                                  children: [
+                                    Chip(
+                                      padding: EdgeInsets.zero,
+                                      label: Text(bloc.exploreData[index].personalities![i]),
+                                    ),
+                                    const SizedBox(width: 5)
+                                  ],
+                                )),
+                      ),
+                    ),
                   ],
                 ),
               ),

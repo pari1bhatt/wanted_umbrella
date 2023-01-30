@@ -14,6 +14,7 @@ import 'package:wanted_umbrella/utils/utils.dart';
 
 import '../models/selection_model.dart';
 import '../providers/chatProvider.dart';
+import '../utils/firestore_constants.dart';
 import 'on_boarding/on_boarding_provider.dart';
 
 class DashboardProvider extends ChangeNotifier {
@@ -31,7 +32,13 @@ class DashboardProvider extends ChangeNotifier {
     OnBoardingProvider provider = Provider.of<OnBoardingProvider>(context, listen: false);
     currentUserModel = provider.currentUserModel;
 
-    await userCol.where('email', isNotEqualTo: Prefs.getUserEmail()).get().then((value) async {
+    List<String> matchList = [];
+    matchList.add(provider.currentUserModel!.id!);
+    for (int i = 0; i < provider.currentUserModel!.matchAccepted.length; i++) {
+      matchList.add(provider.currentUserModel!.matchAccepted[i].id);
+    }
+
+    await userCol.where(FirestoreContants.id_user, whereNotIn: matchList).get().then((value) async {
       exploreData = [];
       for (var document in value.docs) {
         var users = UserModel.fromJson(document.data());
@@ -44,13 +51,10 @@ class DashboardProvider extends ChangeNotifier {
         swipeItems.add(SwipeItem(
             content: exploreData[i],
             likeAction: () {
-              Utils.showSnackBar(context, "Liked ${exploreData[i].dog_name}");
+              sendMatchRequest(exploreData[i], context);
             },
             nopeAction: () {
-              Utils.showSnackBar(context, "Nope ${exploreData[i].dog_name}");
-            },
-            superlikeAction: () {
-              Utils.showSnackBar(context, "Superliked ${exploreData[i].dog_name}");
+              Utils.showSnackBar(context, "Dislike ${exploreData[i].dog_name}");
             },
             onSlideUpdate: (SlideRegion? region) async {
               print("Region $region");
@@ -59,7 +63,6 @@ class DashboardProvider extends ChangeNotifier {
       matchEngine = MatchEngine(swipeItems: swipeItems);
       isExploreLoading = false;
       notifyListeners();
-      print("notified");
     });
   }
 
@@ -70,8 +73,6 @@ class DashboardProvider extends ChangeNotifier {
           .where('breed', isEqualTo: breed)
           .where('gender', isEqualTo: gender)
           .get();
-
-      print("value explore: ${value.docs.length}");
     }
   }
 
@@ -105,29 +106,10 @@ class DashboardProvider extends ChangeNotifier {
     });
   }
 
-  sendMatchRequest(UserModel? model,context){
-    if(model?.id != null){
-
-    } else {
-      debugPrint('id not found');
-    }
-  }
-
-  acceptMatchRequest(UserModel? model,context){
-    if(model?.id != null){
-
-    } else {
-      debugPrint('id not found');
-    }
-  }
-
-  sendBreedingRequest(UserModel? model, context) async {
-    print("check ID: ${model?.id}");
-
-    if(model?.id != null){
-      DocumentReference? doc = FirebaseFirestore.instance.doc("users/${model?.id}");
-      for(DocumentReference data in model?.breedingRequests ?? []){
-        if(data.id == currentUserModel?.id){
+  sendMatchRequest(UserModel? model, context) async {
+    if (model?.id != null) {
+      for (DocumentReference data in model?.matchRequests ?? []) {
+        if (data.id == currentUserModel?.id) {
           AwesomeDialog(
             context: context,
             dialogType: DialogType.info,
@@ -136,13 +118,72 @@ class DashboardProvider extends ChangeNotifier {
             title: 'Note',
             desc: 'Request already sent to this user!',
             btnCancel: null,
-            btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.find_a_mate)),
+            btnOkOnPress: () =>
+                Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
           ).show();
           return;
         }
       }
-      model?.breedingRequests.add(FirebaseFirestore.instance.doc('users/${currentUserModel?.id}'));
-      await doc.update(model!.toJson());
+      model?.matchRequests.add(FirebaseFirestore.instance.doc('users/${currentUserModel?.id}'));
+      await userCol.doc(model?.id).update(model!.toJson());
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.scale,
+        dismissOnTouchOutside: false,
+        title: 'Success',
+        desc: 'Match request sent!',
+        btnCancel: null,
+        btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+      ).show();
+    } else {
+      debugPrint('id not found');
+    }
+  }
+
+  acceptMatchRequest(UserModel? model, context) async {
+    if (model!.id != null) {
+      currentUserModel?.matchRequests.removeWhere((element) => element.id == model.id);
+      currentUserModel?.matchAccepted.add(userCol.doc(model.id));
+      model.matchAccepted.add(userCol.doc(currentUserModel?.id));
+      await userCol.doc(model.id).update(model.toJson());
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.scale,
+        dismissOnTouchOutside: false,
+        title: 'Success',
+        desc: 'Match request accepted. Now you can chat with the person',
+        btnCancel: null,
+        btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
+      ).show();
+      notifyListeners();
+    } else {
+      debugPrint('id not found');
+    }
+  }
+
+  sendBreedingRequest(UserModel? model, context) async {
+    if (model!.id != null) {
+      DocumentReference? doc = FirebaseFirestore.instance.doc("users/${model.id}");
+      for (DocumentReference data in model.breedingRequests ?? []) {
+        if (data.id == currentUserModel?.id) {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.info,
+            animType: AnimType.scale,
+            dismissOnTouchOutside: false,
+            title: 'Note',
+            desc: 'Request already sent to this user!',
+            btnCancel: null,
+            btnOkOnPress: () =>
+                Navigator.popUntil(context, ModalRoute.withName(Routes.find_a_mate)),
+          ).show();
+          return;
+        }
+      }
+      model.breedingRequests.add(FirebaseFirestore.instance.doc('users/${currentUserModel?.id}'));
+      await doc.update(model.toJson());
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,
@@ -153,23 +194,18 @@ class DashboardProvider extends ChangeNotifier {
         btnCancel: null,
         btnOkOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
       ).show();
-    }
-    else {
+    } else {
       debugPrint('id not found');
     }
   }
 
   acceptBreedingRequest(context, id) async {
 
-    print("id check: ${id}");
-
     List? list = currentUserModel?.breedingRequests.cast().toList();
 
     for (var element in list!) {
-      if(element.id == id){
-        print('remove');
+      if (element.id == id) {
         currentUserModel?.breedingRequests.remove(element);
-        print('remove');
         userCol.doc(currentUserModel!.id).update(currentUserModel!.toJson()).then((value) {
           AwesomeDialog(
             context: context,
@@ -177,7 +213,8 @@ class DashboardProvider extends ChangeNotifier {
             animType: AnimType.scale,
             dismissOnTouchOutside: false,
             title: 'Success',
-            desc: 'I hope you had a good booking experience. Wanted umbrella wishes you all luck\n 😀',
+            desc:
+                'I hope you had a good booking experience. Wanted umbrella wishes you all luck\n 😀',
             btnCancel: null,
             btnOkOnPress: () {},
           ).show();
@@ -186,9 +223,6 @@ class DashboardProvider extends ChangeNotifier {
         });
       }
     }
-    // for(DocumentReference a in currentUserModel?.breedingRequests ?? []) {
-    //
-    // }
   }
 
   reset() {

@@ -31,9 +31,7 @@ class ChatScreenState extends State<ChatScreen> {
   }
 
   Widget getBody() {
-    size = MediaQuery
-        .of(context)
-        .size;
+    size = MediaQuery.of(context).size;
     provider = Provider.of<DashboardProvider>(context);
     chatProvider = Provider.of<ChatProvider>(context);
     myUserId = provider.currentUserModel!.id!;
@@ -48,8 +46,7 @@ class ChatScreenState extends State<ChatScreen> {
             child: Container(
               height: 38,
               decoration: BoxDecoration(
-                  color: GetColors.grey.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(5)),
+                  color: GetColors.grey.withOpacity(0.2), borderRadius: BorderRadius.circular(5)),
               child: TextField(
                 cursorColor: GetColors.black.withOpacity(0.5),
                 decoration: InputDecoration(
@@ -65,18 +62,17 @@ class ChatScreenState extends State<ChatScreen> {
           (provider.currentUserModel?.matchRequests.isEmpty ?? true)
               ? const SizedBox()
               : const Padding(
-            padding: EdgeInsets.only(left: 15, bottom: 10, top: 10),
-            child: Text(
-              "Pending matches",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: GetColors.purple),
-            ),
-          ),
+                  padding: EdgeInsets.only(left: 15, bottom: 10, top: 10),
+                  child: Text(
+                    "Pending matches",
+                    style: TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w600, color: GetColors.purple),
+                  ),
+                ),
           (provider.currentUserModel?.matchRequests.isEmpty ?? true)
               ? const SizedBox()
               : SingleChildScrollView(
+                  padding: EdgeInsets.only(left: 15),
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: List.generate(
@@ -97,6 +93,7 @@ class ChatScreenState extends State<ChatScreen> {
                                     UserModel.fromJson(snapshot.data?.data() as Map);
                                 innerModel.id = snapshot.data?.id;
                                 return Card(
+                                  elevation: 3,
                                   child: Padding(
                                     padding:
                                         const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -108,7 +105,7 @@ class ChatScreenState extends State<ChatScreen> {
                                         TextButton(
                                           style: TextButton.styleFrom(
                                               backgroundColor: GetColors.purple),
-                                          onPressed: ()=> onMatchClick(innerModel,context),
+                                          onPressed: () => onMatchClick(innerModel, context),
                                           child: const Text(
                                             "Match",
                                             style: TextStyle(color: GetColors.white),
@@ -124,13 +121,11 @@ class ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
           const SizedBox(height: 10),
-          const Padding(
+          (provider.currentUserModel?.matchAccepted.isEmpty ?? true) ? const SizedBox() : const Padding(
             padding: EdgeInsets.only(left: 15),
             child: Text(
               "Your recent matches",
-              style: TextStyle(fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: GetColors.purple),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: GetColors.purple),
             ),
           ),
           const SizedBox(height: 10),
@@ -138,9 +133,9 @@ class ChatScreenState extends State<ChatScreen> {
             child: (provider.currentUserModel?.matchAccepted.isEmpty ?? true)
                 ? getMatchToChat()
                 : Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: ChatList(),
-                ),
+                    padding: const EdgeInsets.all(10),
+                    child: ChatList(),
+                  ),
           )
         ],
       ),
@@ -193,8 +188,8 @@ class ChatScreenState extends State<ChatScreen> {
       padding: const EdgeInsets.only(bottom: 18),
       child: InkWell(
         onTap: () {
-          String roomId = chatProvider.getChatRoomID(provider.currentUserModel!
-              .id.toString(), userChat.id.toString());
+          String roomId = chatProvider.getChatRoomID(
+              provider.currentUserModel!.id.toString(), userChat.id.toString());
 
           chatProvider.getChatRoom(roomId).then((querySnapShot) {
             if (querySnapShot.docs.length == 0) {
@@ -214,16 +209,17 @@ class ChatScreenState extends State<ChatScreen> {
               // do nothing
               print("we had this room before");
             }
-            print("chatProvider.roomId ${roomId} =>Logged in ${provider
-                .currentUserModel!.name} toChat ${userChat.name}");
+            print(
+                "chatProvider.roomId ${roomId} =>Logged in ${provider.currentUserModel!.name} toChat ${userChat.name}");
 
-            var currentUser = UserChat(name: provider.currentUserModel!.name,
+            var currentUser = UserChat(
+                name: provider.currentUserModel!.name,
                 id: provider.currentUserModel!.id,
-            email: provider.currentUserModel!.email,
-            photo: provider.currentUserModel!.profile_image);
+                email: provider.currentUserModel!.email,
+                photo: provider.currentUserModel!.profile_image);
 
-            Navigator.pushNamed(
-                context, Routes.messege, arguments: [roomId,currentUser,userChat]);
+            Navigator.pushNamed(context, Routes.messege,
+                arguments: [roomId, currentUser, userChat]);
           });
         },
         child: Row(
@@ -245,26 +241,24 @@ class ChatScreenState extends State<ChatScreen> {
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                                image: NetworkImage(userChat.photo!),
-                                fit: BoxFit.cover)),
+                                image: NetworkImage(userChat.photo!), fit: BoxFit.cover)),
                       ),
                     ),
                   ),
                   // If user online then show green dot
                   true
                       ? Positioned(
-                    top: 48,
-                    left: 52,
-                    child: Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                          color: GetColors.green,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: GetColors.white, width: 3)),
-                    ),
-                  )
+                          top: 48,
+                          left: 52,
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                                color: GetColors.green,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: GetColors.white, width: 3)),
+                          ),
+                        )
                       : Container()
                 ],
               ),
@@ -279,14 +273,10 @@ class ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(height: 5),
                 SizedBox(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width - 135,
+                  width: MediaQuery.of(context).size.width - 135,
                   child: Text(
                     "Message - 1:00 pm",
-                    style: TextStyle(
-                        fontSize: 15, color: GetColors.black.withOpacity(0.8)),
+                    style: TextStyle(fontSize: 15, color: GetColors.black.withOpacity(0.8)),
                     overflow: TextOverflow.ellipsis,
                   ),
                 )
@@ -314,8 +304,7 @@ class ChatScreenState extends State<ChatScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text("Match to chat",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text("Match to chat", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           const Text(GetStrings.emptyChatMessage,
               textAlign: TextAlign.center, style: TextStyle(fontSize: 13)),
@@ -333,7 +322,7 @@ class ChatScreenState extends State<ChatScreen> {
       title: 'Confirmation',
       desc: 'Are you sure you want to accept request?',
       btnCancelOnPress: () => Navigator.popUntil(context, ModalRoute.withName(Routes.dashboard)),
-      btnOkOnPress: () => provider.acceptMatchRequest(model,context),
+      btnOkOnPress: () => provider.acceptMatchRequest(model, context),
     ).show();
   }
 }

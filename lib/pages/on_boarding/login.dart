@@ -20,14 +20,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-   //String email = 'shrisha01@gmail.com';
-   //String password = 'Shri@1234';
+  // String email = 'shrisha01@gmail.com';
+  // String password = 'Shri@1234';
 
-    //String email = 'guna@gmail.com';
-   // String password = 'Guna@1234';
+  // String email = 'guna@gmail.com';
+  // String password = 'Guna@1234';
 
-    String email = '';
-    String password = '';
+  String email = '';
+  String password = '';
 
   bool wrongEmail = false;
   bool wrongPassword = false;
@@ -37,6 +37,7 @@ class LoginPageState extends State<LoginPage> {
   String emailText = 'Enter valid Email ID';
   String passwordText = 'password should be at least 6 letters';
   var presscount = 0;
+  bool obsecurePass = true;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +76,7 @@ class LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 20.0),
                   TextFormField(
-                    obscureText: true,
+                    obscureText: obsecurePass,
                     keyboardType: TextInputType.visiblePassword,
                     onChanged: (value) {
                       password = value;
@@ -84,6 +85,9 @@ class LoginPageState extends State<LoginPage> {
                       hintText: 'Password',
                       labelText: 'Password',
                       errorText: wrongPassword ? passwordText : null,
+                        suffixIcon: IconButton(
+                            onPressed: () => setState(() => obsecurePass = !obsecurePass),
+                            icon: Icon(obsecurePass ? Icons.visibility : Icons.visibility_off))
                     ),
                   ),
                   const SizedBox(height: 10.0),
@@ -116,7 +120,8 @@ class LoginPageState extends State<LoginPage> {
                     onTap: () {
                       Navigator.pushNamed(context, Routes.register);
                     },
-                    child: const Text(' Sign Up', style: TextStyle(fontSize: 20, color: GetColors.purple)),
+                    child: const Text(' Sign Up',
+                        style: TextStyle(fontSize: 20, color: GetColors.purple)),
                   ),
                 ],
               ),
@@ -144,10 +149,10 @@ class LoginPageState extends State<LoginPage> {
         });
         await _auth.signInWithEmailAndPassword(email: email, password: password);
         await Prefs.setUserEmail(email);
-        OnBoardingProvider provider = Provider.of<OnBoardingProvider>(context,listen: false);
+        OnBoardingProvider provider = Provider.of<OnBoardingProvider>(context, listen: false);
         await provider.getCurrentUserData(context);
         Navigator.popUntil(context, ModalRoute.withName(Routes.login));
-        if(provider.currentUserModel?.isKciApproved ?? false){
+        if (provider.currentUserModel?.isKciApproved ?? false) {
           Navigator.pushNamed(context, Routes.dashboard);
         } else {
           showKciDialog();
@@ -173,7 +178,7 @@ class LoginPageState extends State<LoginPage> {
     }
   }
 
-  showKciDialog (){
+  showKciDialog() {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.info,

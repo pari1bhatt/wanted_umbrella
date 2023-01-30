@@ -7,6 +7,7 @@ class GetColors {
   static const Color black87 = Colors.black87;
   static const Color yellow = Colors.yellow;
   static const Color blue = Colors.blue;
+  static const Color pink = Colors.pinkAccent;
   static const Color lightBlue = Colors.lightBlue;
   static const Color green = Colors.green;
   static const Color grey = Colors.grey;

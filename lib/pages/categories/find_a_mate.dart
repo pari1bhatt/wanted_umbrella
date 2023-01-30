@@ -306,13 +306,17 @@ class _FindAMateState extends State<FindAMate> {
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
                                         softWrap: false,
-                                        style: const TextStyle(
-                                            color: GetColors.white, fontSize: 15),
+                                        style:
+                                            const TextStyle(color: GetColors.white, fontSize: 15),
                                       ),
-                                      Spacer(),
+                                      const Spacer(),
                                       Icon(
-                                        swipeItems[index].content.gender == 'Male' ? Icons.male : Icons.female,
-                                        color: Colors.white,
+                                        swipeItems[index].content.gender == 'Male'
+                                            ? Icons.male
+                                            : Icons.female,
+                                        color: swipeItems[index].content.gender == 'Male'
+                                            ? GetColors.blue
+                                            : GetColors.pink,
                                         size: 26,
                                       )
                                     ],
@@ -327,9 +331,8 @@ class _FindAMateState extends State<FindAMate> {
                                             children: [
                                               Chip(
                                                 padding: EdgeInsets.zero,
-                                                label: Text(swipeItems[index]
-                                                    .content
-                                                    .personalities![i]),
+                                                label: Text(
+                                                    swipeItems[index].content.personalities![i]),
                                               ),
                                               const SizedBox(width: 5)
                                             ],
@@ -373,11 +376,11 @@ class _FindAMateState extends State<FindAMate> {
     );
   }
 
-  onRequest(){
-    if(visibleUserModel?.gender == 'Female'){
-      provider.sendBreedingRequest(visibleUserModel,context);
+  onRequest() {
+    if (visibleUserModel?.gender == 'Female') {
+      provider.sendBreedingRequest(visibleUserModel, context);
     } else
-    Navigator.pushNamed(context, Routes.gift_payment, arguments: visibleUserModel);
+      Navigator.pushNamed(context, Routes.gift_payment, arguments: visibleUserModel);
   }
 
   onFilter() async {
