@@ -147,6 +147,7 @@ class DashboardProvider extends ChangeNotifier {
       currentUserModel?.matchAccepted.add(userCol.doc(model.id));
       model.matchAccepted.add(userCol.doc(currentUserModel?.id));
       await userCol.doc(model.id).update(model.toJson());
+      await userCol.doc(currentUserModel?.id).update(currentUserModel!.toJson());
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,
