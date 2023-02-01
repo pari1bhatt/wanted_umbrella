@@ -11,7 +11,7 @@ import '../dashboard_provider.dart';
 class ChatBot extends StatelessWidget {
   const ChatBot({Key? key}) : super(key: key);
 
-  final String chatBoaId = "8521";
+  final String chatBoaId = "rN7KI3Ba5EXVuRheD0M0OU7dcGu1";
   @override
   Widget build(BuildContext context) {
     ChatProvider chatProvider = Provider.of<ChatProvider>(context);
