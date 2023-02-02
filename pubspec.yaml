@@ -47,6 +47,7 @@ dependencies:
   intl: ^0.17.0
   path_provider: ^2.0.11
   url_launcher: ^6.1.7
+  google_maps_flutter: ^2.2.3
 
 
 dev_dependencies:
